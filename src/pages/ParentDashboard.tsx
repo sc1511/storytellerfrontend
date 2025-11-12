@@ -65,10 +65,17 @@ export default function ParentDashboard() {
     setError(null);
 
     try {
+      console.log('Registering with API URL:', API_BASE_URL);
       const response = await axios.post(`${API_BASE_URL}/auth/parent/register`, {
         email,
         password,
       });
+
+      console.log('Registration response:', response.data);
+      
+      if (!response.data?.data?.token) {
+        throw new Error('No token received from server');
+      }
 
       const newToken = response.data.data.token;
       setToken(newToken);
@@ -76,7 +83,18 @@ export default function ParentDashboard() {
       setIsLoggedIn(true);
       fetchChildren();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registratie mislukt');
+      console.error('Registration error:', err);
+      console.error('Error response:', err.response);
+      
+      if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
+        setError(`Kan niet verbinden met de server. Check of de backend draait op: ${API_BASE_URL}`);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError(err.message || 'Registratie mislukt');
+      }
     } finally {
       setLoading(false);
     }
