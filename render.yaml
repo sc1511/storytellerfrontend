@@ -1,0 +1,11 @@
+services:
+  # Frontend Static Site
+  - type: web
+    name: storyteller-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false # Set this manually in Render dashboard to: https://your-backend-url.onrender.com/api
+
