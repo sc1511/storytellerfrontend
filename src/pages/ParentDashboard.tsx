@@ -84,14 +84,21 @@ export default function ParentDashboard() {
       fetchChildren();
     } catch (err: any) {
       console.error('Registration error:', err);
+      console.error('Error code:', err.code);
+      console.error('Error message:', err.message);
       console.error('Error response:', err.response);
+      console.error('Request URL:', err.config?.url);
       
-      if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
-        setError(`Kan niet verbinden met de server. Check of de backend draait op: ${API_BASE_URL}`);
+      if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error') || !err.response) {
+        setError(`Kan niet verbinden met de backend. Controleer of de backend online is: ${API_BASE_URL.replace('/api', '')}/health`);
+      } else if (err.response?.status === 0) {
+        setError('CORS error: Backend staat geen requests toe van deze frontend. Check CORS_ORIGIN in backend.');
       } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else if (err.response?.data?.error) {
         setError(err.response.data.error);
+      } else if (err.response?.status) {
+        setError(`Server error (${err.response.status}): ${err.response.statusText || 'Onbekende fout'}`);
       } else {
         setError(err.message || 'Registratie mislukt');
       }
