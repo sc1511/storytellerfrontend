@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Comfortaa:wght@300;400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Quicksand:wght@400;500;600;700&family=Fredoka+One&family=Baloo+2:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+
+/* Gyahegi Font */
+@font-face {
+  font-family: 'Gyahegi';
+  src: url('/fonts/Gyahegi.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ButterflyKids Font - For story reading only */
+@font-face {
+  font-family: 'ButterflyKids';
+  src: url('/fonts/ButterflyKids-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* K-pop Dark Theme - Neon Colors */
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 280 100% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 100% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 320 100% 70%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 32% 25%;
+    --input: 217 32% 20%;
+    --ring: 280 100% 70%;
+    --radius: 0.5rem;
+    
+    /* K-pop Neon Colors */
+    --neon-pink: #FF10F0;
+    --neon-blue: #00F0FF;
+    --neon-purple: #B026FF;
+    --neon-cyan: #00FFFF;
+    --neon-magenta: #FF00FF;
+    --dark-bg: #0a0a1a;
+    --dark-bg-secondary: #1a1a2e;
+    --dark-bg-tertiary: #16213e;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+         @keyframes shimmer {
+           0% {
+             transform: translateX(-100%);
+           }
+           100% {
+             transform: translateX(100%);
+           }
+         }
+
+         @keyframes spin {
+           from {
+             transform: rotate(0deg);
+           }
+           to {
+             transform: rotate(360deg);
+           }
+         }
+
+         @keyframes aurora-flow {
+           0% {
+             transform: translateY(0) scale(1);
+             opacity: 0.5;
+           }
+           50% {
+             transform: translateY(-20px) scale(1.1);
+             opacity: 0.7;
+           }
+           100% {
+             transform: translateY(0) scale(1);
+             opacity: 0.5;
+           }
+         }
+
+         @keyframes glow-pulse {
+           0%, 100% {
+             filter: drop-shadow(0 0 10px var(--neon-pink)) 
+                     drop-shadow(0 0 20px var(--neon-purple))
+                     drop-shadow(0 0 30px var(--neon-blue));
+             opacity: 1;
+           }
+           50% {
+             filter: drop-shadow(0 0 20px var(--neon-pink)) 
+                     drop-shadow(0 0 40px var(--neon-purple))
+                     drop-shadow(0 0 60px var(--neon-blue));
+             opacity: 0.8;
+           }
+         }
+
+         @keyframes neon-flicker {
+           0%, 100% {
+             opacity: 1;
+             filter: brightness(1);
+           }
+           50% {
+             opacity: 0.8;
+             filter: brightness(1.2);
+           }
+         }
+
+         @keyframes particle-float {
+           0% {
+             transform: translateY(100vh) translateX(0) rotate(0deg);
+             opacity: 0;
+           }
+           10% {
+             opacity: 1;
+           }
+           90% {
+             opacity: 1;
+           }
+           100% {
+             transform: translateY(-100vh) translateX(100px) rotate(360deg);
+             opacity: 0;
+           }
+         }
+
+         @keyframes coinFlip {
+           0% {
+             transform: rotateY(0deg);
+           }
+           50% {
+             transform: rotateY(180deg);
+           }
+           100% {
+             transform: rotateY(360deg);
+           }
+         }
+
+         @keyframes starRotateRight {
+           0% {
+             transform: rotate(0deg);
+           }
+           100% {
+             transform: rotate(360deg);
+           }
+         }
+
+         @keyframes playRotateRight {
+           0% {
+             transform: rotateY(0deg);
+           }
+           100% {
+             transform: rotateY(360deg);
+           }
+         }
+
+         .glow-text {
+           text-shadow: 
+             0 0 10px var(--neon-pink),
+             0 0 20px var(--neon-purple),
+             0 0 30px var(--neon-blue),
+             0 0 40px var(--neon-cyan);
+           animation: glow-pulse 3s ease-in-out infinite;
+         }
+
+         .glow-border {
+           box-shadow: 
+             0 0 10px var(--neon-pink),
+             0 0 20px var(--neon-purple),
+             inset 0 0 10px rgba(255, 16, 240, 0.1);
+         }
+
+         .neon-glow {
+           filter: drop-shadow(0 0 10px currentColor) 
+                   drop-shadow(0 0 20px currentColor)
+                   drop-shadow(0 0 30px currentColor);
+         }
+
+         .animate-shimmer {
+           animation: shimmer 2s infinite;
+         }
+
+         body {
+           @apply text-foreground;
+           font-family: 'Poppins', 'Gyahegi', 'Comfortaa', 'Nunito Sans', 'Quicksand', system-ui, sans-serif;
+           font-size: 18px;
+           line-height: 1.7;
+           margin: 0;
+           padding: 0;
+           min-height: 100vh;
+           background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+           color: #ffffff;
+         }
+
+         /* Korean text uses system fonts (exclude from Gyahegi) */
+         [lang="ko"],
+         .korean-text {
+           font-family: 'Comfortaa', 'Nunito Sans', 'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif !important;
+         }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  button {
+    min-width: 176px;
+    min-height: 176px;
+    touch-action: manipulation;
+  }
+
+         @media (max-width: 768px) {
+           button {
+             min-width: 120px;
+             min-height: 120px;
+           }
+         }
+
+         /* Hide scrollbar for bridges container */
+         .bridges-container::-webkit-scrollbar {
+           display: none;
+         }
+
+         /* Force transparent backgrounds voor bridge containers - GEEN WITTE KADERS */
+         .bridges-container > div[data-inertia-hover] {
+           background: transparent !important;
+           backgroundColor: transparent !important;
+           border: none !important;
+           outline: none !important;
+           boxShadow: none !important;
+         }
+
+         .bridges-container > div[data-inertia-hover] > div {
+           background: transparent !important;
+           backgroundColor: transparent !important;
+           border: none !important;
+           outline: none !important;
+           boxShadow: none !important;
+         }
+
+         .bridges-container > div[data-inertia-hover] > div > img {
+           background: transparent !important;
+           backgroundColor: transparent !important;
+         }
+       }
+
+@layer components {
+  .story-text {
+    @apply text-story-lg leading-relaxed;
+    font-family: 'ButterflyKids', 'Quicksand', 'Nunito Sans', sans-serif;
+    max-width: 60ch;
+  }
+
+  .dyslexia-mode {
+    @apply font-dyslexia;
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  .touch-target {
+    min-width: 176px;
+    min-height: 176px;
+  }
+
+  @media (max-width: 768px) {
+    .touch-target {
+      min-width: 120px;
+      min-height: 120px;
+    }
+  }
+}
