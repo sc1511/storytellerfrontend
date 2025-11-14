@@ -2592,7 +2592,7 @@ export default function StoryReaderPage() {
                       position: 'relative',
                     }}
                   >
-                    {/* Test Reminder Message - Above Avatar on Last Segment */}
+                    {/* Test Reminder Message - Only show AFTER story is completed */}
                     {(() => {
                       const lastSegmentIndex = currentSession.story_segments.length - 1;
                       const lastSegment = currentSession.story_segments[lastSegmentIndex];
@@ -2600,10 +2600,9 @@ export default function StoryReaderPage() {
                                              Array.isArray(lastSegment.comprehension_questions) && 
                                              lastSegment.comprehension_questions.length > 0;
                       const isTestCompleted = testCompletedForSegment[lastSegmentIndex] || false;
-                      const isCurrentlyLastSegment = currentSegmentIndex === lastSegmentIndex;
                       
-                      // Show reminder if: on last segment OR story is completed, has test questions, and test is not completed
-                      return (isCurrentlyLastSegment || currentSession.completed) && 
+                      // Show reminder ONLY if story is completed, has test questions, and test is not completed
+                      return currentSession.completed && 
                              hasTestQuestions && 
                              !isTestCompleted && (
                         <div className="mb-4 px-4 py-3 rounded-lg text-center" style={{
