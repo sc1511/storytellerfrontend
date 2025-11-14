@@ -71,7 +71,7 @@ const RollingKoreanBackground = () => {
         style={{ zIndex: 1, opacity: 0.5 }}
       >
         <div className="marquee-content flex whitespace-nowrap items-center h-full">
-          {[...Array(15)].map((_, i) => {
+          {[...Array(8)].map((_, i) => {
             const color = i % 2 === 0 ? KPOP_COLORS.neonPink : KPOP_COLORS.neonCyan;
             return (
               <span
@@ -160,47 +160,8 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
       setHasAnimated(true);
     }, 100); // Korte delay om zeker te zijn dat component gemount is
 
-    // Continuous blob morphing and floating - start direct
-    gsap.utils.toArray('.floating-blob').forEach((blob: any, i) => {
-      gsap.to(blob, {
-        y: `random(-80, 80)`,
-        x: `random(-80, 80)`,
-        scale: `random(0.7, 1.4)`,
-        rotation: `random(-180, 180)`,
-        duration: `random(4, 8)`,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-        delay: i * 0.3
-      });
-    });
-
-    // Rotate light rays continuously - start direct
-    gsap.to(lightRaysRef.current, {
-      rotation: 360,
-      duration: 40,
-      repeat: -1,
-      ease: 'none'
-    });
-
-    // Pulse light rays - start direct
-    gsap.to('.light-ray', {
-      opacity: 'random(0.3, 0.7)',
-      duration: 'random(2, 4)',
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-      stagger: 0.2
-    });
-
-    // Gentle floating for input card - start direct
-    gsap.to(inputCardRef.current, {
-      y: -10,
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut'
-    });
+    // No continuous animations - static for better performance
+    // Floating blobs, light rays, and input card stay still
 
     return () => {
       clearTimeout(timer);
@@ -392,10 +353,10 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
         </div>
       )}
 
-      {/* Neon Geometric Shapes and Lines - Decorative Background Elements */}
+      {/* Neon Geometric Shapes and Lines - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {/* Diagonal lines */}
-        {[...Array(10)].map((_, i) => (
+        {/* Diagonal lines - Reduced */}
+        {[...Array(5)].map((_, i) => (
           <div
             key={`line-${i}`}
             className="absolute"
@@ -408,12 +369,13 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
               transform: `rotate(${-45 + Math.random() * 90}deg)`,
               boxShadow: `0 0 15px ${[KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan][i % 4]}44`,
               opacity: 0.25 + Math.random() * 0.25,
+              // No animation - static for better performance
             }}
           />
         ))}
         
-        {/* Geometric shapes */}
-        {[...Array(15)].map((_, i) => {
+        {/* Geometric shapes - Reduced */}
+        {[...Array(8)].map((_, i) => {
           const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
           const color = colors[i % colors.length];
           const size = 25 + Math.random() * 50;
@@ -435,16 +397,16 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
                 `,
                 opacity: 0.15 + Math.random() * 0.25,
                 transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${3 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
+                // No animation - static for better performance
               }}
             />
           );
         })}
       </div>
 
-      {/* Noodles icons in background - scattered */}
+      {/* Noodles icons in background - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(5)].map((_, i) => {
+        {[...Array(2)].map((_, i) => {
           const size = 80 + Math.random() * 120;
           return (
             <div
@@ -457,8 +419,7 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
                 height: `${size}px`,
                 opacity: 0.15 + Math.random() * 0.15,
                 transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${5 + Math.random() * 5}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
+                // No animation - static for better performance
               }}
             >
               <img
@@ -477,9 +438,9 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
         })}
       </div>
 
-      {/* Background particles / Stars */}
+      {/* Background particles / Stars - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(60)].map((_, i) => (
+        {[...Array(20)].map((_, i) => (
           <div
             key={`star-${i}`}
             className="absolute rounded-full"
@@ -490,8 +451,7 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
               height: `${1 + Math.random() * 5}px`,
               background: ['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF', '#FFD700'][i % 5],
               boxShadow: `0 0 ${3 + Math.random() * 8}px ${['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF', '#FFD700'][i % 5]}`,
-              animation: `neon-flicker ${2 + Math.random() * 5}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 4}s`,
+              // No animation - static for better performance
             }}
           />
         ))}
