@@ -298,8 +298,8 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
           ref={catTooltipRef}
           className="absolute z-[200] px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
           style={{
-            right: 'calc(30vh + 20px)', // Links van de kat (kat is rechts, 30vh breed)
-            bottom: 'calc(50% - 15vh)', // Onder de kat (kat is gecentreerd op 50%, hoogte is 30vh, dus bottom is 50% - 15vh)
+            right: 'calc(30vh + 40px)', // Links van de kat (kat is rechts, 30vh breed, +40px voor meer ruimte)
+            bottom: 'calc(50% - 20vh)', // Onder de kat (kat is gecentreerd op 50%, hoogte is 30vh, dus bottom is 50% - 20vh voor meer ruimte onder)
             background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
             border: `2px solid ${KPOP_COLORS.neonCyan}`,
             boxShadow: `
