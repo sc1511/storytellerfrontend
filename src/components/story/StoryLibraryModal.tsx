@@ -259,7 +259,17 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {sessions.map((session) => (
+              {sessions.map((session) => {
+                // Check if last segment has comprehension questions (test needed)
+                const lastSegment = session.story_segments && session.story_segments.length > 0 
+                  ? session.story_segments[session.story_segments.length - 1]
+                  : null;
+                const hasTestQuestions = lastSegment?.comprehension_questions && 
+                                       Array.isArray(lastSegment.comprehension_questions) && 
+                                       lastSegment.comprehension_questions.length > 0;
+                const needsTest = session.completed && hasTestQuestions;
+                
+                return (
                 <div
                   key={session.session_id}
                   onClick={() => handleStoryClick(session.session_id)}
@@ -298,19 +308,47 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
                         {session.metadata?.setting || 'Plaats'} • {session.metadata?.object || 'Voorwerp'}
                       </p>
                     </div>
-                    {session.completed && (
-                      <span
-                        className="text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2"
-                        style={{
-                          background: `${KPOP_COLORS.neonCyan}22`,
-                          color: KPOP_COLORS.neonCyan,
-                          border: `1px solid ${KPOP_COLORS.neonCyan}44`,
-                        }}
-                      >
-                        ✓ Voltooid
-                      </span>
-                    )}
+                    <div className="flex flex-col items-end gap-1">
+                      {session.completed && (
+                        <span
+                          className="text-xs px-2 py-1 rounded-full flex-shrink-0"
+                          style={{
+                            background: `${KPOP_COLORS.neonCyan}22`,
+                            color: KPOP_COLORS.neonCyan,
+                            border: `1px solid ${KPOP_COLORS.neonCyan}44`,
+                          }}
+                        >
+                          ✓ Voltooid
+                        </span>
+                      )}
+                      {needsTest && (
+                        <span
+                          className="text-xs px-2 py-1 rounded-full flex-shrink-0"
+                          style={{
+                            background: '#ff9800',
+                            color: '#ffffff',
+                            border: '1px solid #ff9800',
+                            fontWeight: 600,
+                          }}
+                        >
+                          🎯 Test nodig
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  {needsTest && (
+                    <div className="mb-2 p-2 rounded-lg" style={{
+                      background: 'rgba(255, 152, 0, 0.2)',
+                      border: '1px solid #ff9800',
+                    }}>
+                      <p className="text-xs font-semibold" style={{
+                        color: '#ff9800',
+                        fontFamily: "'Poppins', sans-serif",
+                      }}>
+                        💡 Dien je laatste test in om je verhaal volledig te voltooien!
+                      </p>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-sm pt-2 border-t"
                     style={{
                       borderColor: `${KPOP_COLORS.neonPurple}33`,
@@ -330,7 +368,8 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
                     </span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
