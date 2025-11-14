@@ -882,14 +882,33 @@ export default function ParentDashboard() {
                       const isSelected = selectedStories.has(sessionId);
                       
                       // Get incorrect answers for this story's segments
-                      const getIncorrectAnswersForSegment = (segmentSeq: number) => {
-                        if (!reportData.incorrectAnswers) return [];
-                        return reportData.incorrectAnswers.filter((item: any) => {
-                          // Try to match by segment if available, otherwise by session
-                          return item.segmentSequence === segmentSeq || 
-                                 item.segment_sequence === segmentSeq ||
-                                 (item.session_id === sessionId && !item.segmentSequence && !item.segment_sequence);
+                      // Match by session_id and segment_sequence from test results
+                      const getIncorrectAnswersForSegment = (segmentSeq: number, testResult: any) => {
+                        if (!reportData.incorrectAnswers || !reportData.incorrectAnswers.length) return [];
+                        
+                        // First try to match by session_id and segment_sequence
+                        const matched = reportData.incorrectAnswers.filter((item: any) => {
+                          // Match by session_id
+                          const sessionMatch = item.session_id === sessionId || 
+                                             item.sessionId === sessionId ||
+                                             (!item.session_id && !item.sessionId); // If no session_id, might be from this story
+                          
+                          // Match by segment_sequence
+                          const segmentMatch = item.segmentSequence === segmentSeq || 
+                                             item.segment_sequence === segmentSeq ||
+                                             item.segment_sequence === testResult?.segmentSequence ||
+                                             item.segmentSequence === testResult?.segment_sequence;
+                          
+                          // Also try to match by test result ID if available
+                          const testMatch = testResult?.id && (
+                            item.test_id === testResult.id ||
+                            item.testId === testResult.id
+                          );
+                          
+                          return sessionMatch && (segmentMatch || testMatch || (!item.segmentSequence && !item.segment_sequence));
                         });
+                        
+                        return matched;
                       };
                       
                       return (
@@ -1056,7 +1075,7 @@ export default function ParentDashboard() {
                                     const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
                                     const segmentKey = `${sessionId}-segment-${segmentSeq}`;
                                     const isExpanded = expandedSegments.has(segmentKey);
-                                    const incorrectAnswers = getIncorrectAnswersForSegment(segmentSeq);
+                                    const incorrectAnswers = getIncorrectAnswersForSegment(segmentSeq, test);
                                     
                                     return (
                                       <div key={test.id || `segment-${segmentSeq}-${testIdx}`} className="w-full">
@@ -1114,21 +1133,36 @@ export default function ParentDashboard() {
                                           </div>
                                         </div>
                                         
-                                        {/* Expanded: Show Incorrect Answers */}
-                                        {isExpanded && incorrectAnswers.length > 0 && (
-                                          <div className="mt-2 ml-4 p-2 rounded bg-yellow-50 border-l-4 border-yellow-500">
-                                            <div className="text-xs font-bold mb-1" style={{ color: '#000000' }}>
-                                              Fout beantwoorde vragen:
-                                            </div>
-                                            <div className="space-y-1">
-                                              {incorrectAnswers.map((item: any, itemIdx: number) => (
-                                                <div key={itemIdx} className="text-xs">
-                                                  <div className="font-semibold text-gray-800">{item.question}</div>
-                                                  <div className="text-red-600">Kind: "{item.childAnswer}"</div>
-                                                  <div className="text-green-600">Juist: "{item.correctAnswer}"</div>
+                                        {/* Expanded: Show Incorrect Answers or message */}
+                                        {isExpanded && (
+                                          <div className="mt-2 ml-4">
+                                            {incorrectAnswers.length > 0 ? (
+                                              <div className="p-2 rounded bg-yellow-50 border-l-4 border-yellow-500">
+                                                <div className="text-xs font-bold mb-1" style={{ color: '#000000' }}>
+                                                  💡 Leermomenten - Fout beantwoorde vragen:
                                                 </div>
-                                              ))}
-                                            </div>
+                                                <div className="space-y-2">
+                                                  {incorrectAnswers.map((item: any, itemIdx: number) => (
+                                                    <div key={itemIdx} className="text-xs p-2 bg-white rounded border border-yellow-300">
+                                                      <div className="font-semibold text-gray-800 mb-1">{item.question}</div>
+                                                      <div className="text-red-600 mb-0.5">Kind antwoordde: "{item.childAnswer}"</div>
+                                                      <div className="text-green-600">Juiste antwoord: "{item.correctAnswer}"</div>
+                                                      {item.date && (
+                                                        <div className="text-xs text-gray-500 mt-1">
+                                                          {new Date(item.date).toLocaleDateString('nl-NL')}
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            ) : (
+                                              <div className="p-2 rounded bg-gray-50 border-l-4 border-gray-300">
+                                                <div className="text-xs text-gray-600">
+                                                  Geen fout beantwoorde vragen voor dit segment. Goed gedaan! 🎉
+                                                </div>
+                                              </div>
+                                            )}
                                           </div>
                                         )}
                                       </div>
@@ -1146,30 +1180,6 @@ export default function ParentDashboard() {
                 </div>
               )}
 
-              {/* Incorrect Answers Analysis (from proposal) */}
-              {reportData.incorrectAnswers && reportData.incorrectAnswers.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>💡 Leermomenten</h3>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Voorbeelden van vragen die fout werden beantwoord - ideaal voor een gesprek met je kind:
-                  </p>
-                  <div className="space-y-3">
-                    {reportData.incorrectAnswers.map((item: any, idx: number) => (
-                      <div key={idx} className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
-                        <div className="font-semibold mb-2 text-gray-800">{item.question}</div>
-                        <div className="text-sm">
-                          <span className="text-red-600">Kind antwoordde: "{item.childAnswer}"</span>
-                          <br />
-                          <span className="text-green-600">Juiste antwoord: "{item.correctAnswer}"</span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {new Date(item.date).toLocaleDateString('nl-NL')}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {(!reportData.stories || reportData.stories.length === 0) && 
                (!reportData.comprehensionResults || reportData.comprehensionResults.length === 0) && (
