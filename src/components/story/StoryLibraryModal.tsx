@@ -155,11 +155,17 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     setTimeout(() => {
       // Navigate to story reader page
       navigate(`/story/${sessionId}`);
-      // Loading will be handled by StoryReaderPage, but keep it visible for a moment
+      // Keep loading overlay visible longer - StoryReaderPage needs time to load
+      // The StoryReaderPage has its own loading state, but we keep this overlay
+      // visible for at least 3-4 seconds to ensure smooth transition
       setTimeout(() => {
-        setIsNavigating(false);
-        setNavigatingToSessionId(null);
-      }, 500);
+        // Only hide if we're still navigating to the same session
+        // (in case user navigated away or page loaded)
+        if (navigatingToSessionId === sessionId) {
+          setIsNavigating(false);
+          setNavigatingToSessionId(null);
+        }
+      }, 4000); // Keep visible for 4 seconds - gives StoryReaderPage time to load
     }, 300);
   };
 
@@ -172,49 +178,55 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     });
   };
 
-  if (!isOpen && !isNavigating) return null;
+  // Always show loading overlay if navigating, even if modal is closed
+  if (isNavigating) {
+    return (
+      <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        {/* Background Video */}
+        <video
+          src="/kidsreadingtablet.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          style={{ zIndex: 1 }}
+          onError={(e) => {
+            console.error('Error loading video:', e);
+          }}
+        />
+        
+        {/* Loading Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center gap-6">
+          {/* Spinner */}
+          <div
+            className="w-24 h-24 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"
+            role="status"
+            aria-label="Loading"
+          >
+            <span className="sr-only">Loading...</span>
+          </div>
+          
+          {/* Text */}
+          <p 
+            className="text-2xl font-bold text-white"
+            style={{
+              fontFamily: "'Comfortaa', sans-serif",
+              textShadow: '0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(176, 38, 255, 0.5)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            Je verhaal wordt geladen...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) return null;
 
   return (
     <>
-      {/* Loading Overlay with Video - Shows when navigating to a story */}
-      {isNavigating && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          {/* Background Video */}
-          <video
-            src="/kidsreadingtablet.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
-            style={{ zIndex: 1 }}
-          />
-          
-          {/* Loading Content */}
-          <div className="relative z-10 flex flex-col items-center justify-center gap-6">
-            {/* Spinner */}
-            <div
-              className="w-24 h-24 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"
-              role="status"
-              aria-label="Loading"
-            >
-              <span className="sr-only">Loading...</span>
-            </div>
-            
-            {/* Text */}
-            <p 
-              className="text-2xl font-bold text-white"
-              style={{
-                fontFamily: "'Comfortaa', sans-serif",
-                textShadow: '0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(176, 38, 255, 0.5)',
-                letterSpacing: '0.05em',
-              }}
-            >
-              Je verhaal wordt geladen...
-            </p>
-          </div>
-        </div>
-      )}
       
       {/* Modal */}
     <div
