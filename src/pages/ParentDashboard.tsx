@@ -1009,7 +1009,7 @@ export default function ParentDashboard() {
                                       color: '#666666',
                                       fontFamily: "'Poppins', sans-serif",
                                     }}>
-                                      👶 {story.metadata?.age || story.age} jaar
+                                      👶 {story.metadata?.age || story.age}
                                     </span>
                                   )}
                                   {avgScore !== null && (

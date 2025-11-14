@@ -260,14 +260,25 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sessions.map((session) => {
-                // Check if last segment has comprehension questions (test needed)
-                const lastSegment = session.story_segments && session.story_segments.length > 0 
-                  ? session.story_segments[session.story_segments.length - 1]
-                  : null;
-                const hasTestQuestions = lastSegment?.comprehension_questions && 
-                                       Array.isArray(lastSegment.comprehension_questions) && 
-                                       lastSegment.comprehension_questions.length > 0;
-                const needsTest = session.completed && hasTestQuestions;
+                // Check ALL segments for missing tests, not just the last one
+                const segmentsWithTests = session.story_segments?.map((segment: any, index: number) => {
+                  const hasTestQuestions = segment?.comprehension_questions && 
+                                         Array.isArray(segment.comprehension_questions) && 
+                                         segment.comprehension_questions.length > 0;
+                  return {
+                    segmentIndex: index,
+                    segmentSequence: segment?.sequence || index + 1,
+                    hasTestQuestions,
+                  };
+                }) || [];
+                
+                // Count how many segments need tests
+                const segmentsNeedingTests = segmentsWithTests.filter(s => s.hasTestQuestions);
+                const totalTestsNeeded = segmentsNeedingTests.length;
+                
+                // For now, show warning if story is completed but has test questions
+                // (We can't check if tests are actually completed without API call)
+                const needsTest = session.completed && totalTestsNeeded > 0;
                 
                 return (
                 <div
@@ -341,11 +352,32 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
                       background: 'rgba(255, 152, 0, 0.2)',
                       border: '1px solid #ff9800',
                     }}>
-                      <p className="text-xs font-semibold" style={{
+                      <p className="text-xs font-semibold mb-1" style={{
                         color: '#ff9800',
                         fontFamily: "'Poppins', sans-serif",
                       }}>
-                        💡 Dien je laatste test in om je verhaal volledig te voltooien!
+                        🎯 {totalTestsNeeded === 1 
+                          ? 'Dien je test in om je verhaal volledig te voltooien!' 
+                          : `Dien je ${totalTestsNeeded} tests in om je verhaal volledig te voltooien!`}
+                      </p>
+                      <p className="text-xs opacity-80" style={{
+                        color: '#ff9800',
+                        fontFamily: "'Poppins', sans-serif",
+                      }}>
+                        💡 Klik op het verhaal om de tests te maken!
+                      </p>
+                    </div>
+                  )}
+                  {!session.completed && totalTestsNeeded > 0 && (
+                    <div className="mb-2 p-2 rounded-lg" style={{
+                      background: 'rgba(156, 39, 176, 0.2)',
+                      border: '1px solid #9c27b0',
+                    }}>
+                      <p className="text-xs font-semibold" style={{
+                        color: '#9c27b0',
+                        fontFamily: "'Poppins', sans-serif",
+                      }}>
+                        📝 Verhaal heeft {totalTestsNeeded} {totalTestsNeeded === 1 ? 'test' : 'tests'} beschikbaar
                       </p>
                     </div>
                   )}
