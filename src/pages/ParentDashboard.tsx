@@ -699,7 +699,7 @@ export default function ParentDashboard() {
                         Verwijder ({selectedStories.size})
                       </button>
                     )}
-                  </div>
+                        </div>
                   
                   {storiesDropdownOpen && (
                   <div className="flex flex-col gap-3">
@@ -804,17 +804,17 @@ export default function ParentDashboard() {
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                                   <h3
                                     className="text-base font-bold truncate"
-                                    style={{
-                                      color: story.isCompleted ? '#006064' : '#4a148c',
-                                      fontFamily: "'Poppins', sans-serif",
-                                    }}
-                                  >
-                                    {story.character} verhaal
-                                  </h3>
+                                style={{
+                                  color: story.isCompleted ? '#006064' : '#4a148c',
+                                  fontFamily: "'Poppins', sans-serif",
+                                }}
+                              >
+                                {story.character} verhaal
+                              </h3>
                                   {story.isCompleted && (
                                     <span
                                       className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                                      style={{
+                                style={{
                                         background: '#00bcd4',
                                         color: '#ffffff',
                                         fontWeight: 600,
@@ -827,7 +827,7 @@ export default function ParentDashboard() {
                                     color: '#666666',
                                     fontFamily: "'Poppins', sans-serif",
                                   }}>
-                                    📅 {new Date(story.date || story.created_at).toLocaleDateString('nl-NL')}
+                                📅 {new Date(story.date || story.created_at).toLocaleDateString('nl-NL')}
                                   </span>
                                   <span className="text-xs" style={{ 
                                     color: '#666666',
@@ -844,59 +844,59 @@ export default function ParentDashboard() {
                                     </span>
                                   )}
                                   {avgScore !== null && (
-                                    <span 
+                                <span
                                       className="text-xs px-2 py-0.5 rounded"
-                                      style={{ 
+                                  style={{
                                         fontFamily: "'Poppins', sans-serif",
                                         fontWeight: 700,
                                         background: story.isCompleted ? '#00bcd4' : '#9c27b0',
-                                        color: '#ffffff',
-                                      }}
-                                    >
+                                    color: '#ffffff',
+                                  }}
+                                >
                                       ⭐ {avgScore}%
-                                    </span>
-                                  )}
+                                </span>
+                              )}
                                 </div>
                               </div>
                             </div>
 
                             {/* Right: Small Delete Button */}
-                            <button
+                              <button
                               onClick={async (e) => {
                                 e.stopPropagation();
                                 if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) {
-                                  return;
-                                }
-                                try {
-                                  await axios.delete(
-                                    `${API_BASE_URL}/auth/parent/story/${sessionId}`,
-                                    {
-                                      headers: {
-                                        Authorization: `Bearer ${token}`,
-                                      },
-                                    }
-                                  );
-                                  // Refresh report data
-                                  if (reportData?.childProfileId) {
-                                    handleRequestReport(reportData.childProfileId, reportData.childName || '');
+                                    return;
                                   }
+                                  try {
+                                    await axios.delete(
+                                    `${API_BASE_URL}/auth/parent/story/${sessionId}`,
+                                      {
+                                        headers: {
+                                          Authorization: `Bearer ${token}`,
+                                        },
+                                      }
+                                    );
+                                    // Refresh report data
+                                    if (reportData?.childProfileId) {
+                                      handleRequestReport(reportData.childProfileId, reportData.childName || '');
+                                    }
                                   } catch (err: any) {
                                     alert(getUserFriendlyError(err, 'Kon het verhaal niet verwijderen. Probeer het later opnieuw.'));
                                   }
-                              }}
+                                }}
                               className="px-2 py-1 text-xs rounded transition-all hover:bg-red-100"
-                              style={{
+                                style={{
                                 background: '#f5f5f5',
                                 color: '#d32f2f',
-                                fontWeight: 600,
-                                cursor: 'pointer',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
                                 border: '1px solid #d32f2f',
-                              }}
-                              title="Verhaal verwijderen"
-                            >
+                                }}
+                                title="Verhaal verwijderen"
+                              >
                               Delete
-                            </button>
-                          </div>
+                              </button>
+                            </div>
                           
                           {/* Expanded Story Details */}
                           {isStoryExpanded && (
@@ -914,7 +914,7 @@ export default function ParentDashboard() {
                                         <span style={{ color: '#666666' }}>
                                           {Math.round(story.metadata.creativity_metrics.originality_score)}% Originaliteit
                                         </span>
-                                      </div>
+                          </div>
                                     )}
                                     
                                     {/* Sensory Language */}
@@ -928,7 +928,7 @@ export default function ParentDashboard() {
                                         <span style={{ color: '#666666' }}>
                                           {Math.round(story.metadata.creativity_metrics.sensory_language_percentage || 
                                                     story.metadata.creativity_metrics.sensory_language_density || 0)}% Zintuiglijk
-                                        </span>
+                              </span>
                                       </div>
                                     )}
                                     
@@ -943,7 +943,7 @@ export default function ParentDashboard() {
                                         <span style={{ color: '#4caf50', fontWeight: 600 }}>📚</span>
                                         <span style={{ color: '#666666' }}>
                                           {story.metadata.educational_themes.length} {story.metadata.educational_themes.length === 1 ? 'thema' : 'thema\'s'}
-                                        </span>
+                                </span>
                                         <span className="ml-1" style={{ color: '#999999', fontSize: '10px' }}>
                                           ({story.metadata.educational_themes.slice(0, 2).join(', ')}{story.metadata.educational_themes.length > 2 ? '...' : ''})
                                         </span>
@@ -962,7 +962,7 @@ export default function ParentDashboard() {
                                         <span style={{ color: '#666666' }}>
                                           {story.metadata.creativity_metrics.imaginative_elements.length} {story.metadata.creativity_metrics.imaginative_elements.length === 1 ? 'element' : 'elementen'}
                                         </span>
-                                      </div>
+                            </div>
                                     )}
                                     
                                     {/* Character Development */}
@@ -975,7 +975,7 @@ export default function ParentDashboard() {
                                         <span style={{ color: '#666666' }}>
                                           {story.metadata.creativity_metrics.character_development_depth}/10 Karakter
                                         </span>
-                                      </div>
+                          </div>
                                     )}
                                     
                                     {/* Plot Complexity */}
@@ -1100,11 +1100,11 @@ export default function ParentDashboard() {
                                 {story.testResults && story.testResults.length > 0 && (
                                   <div className="mt-2 pt-2 border-t" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
                                     <div className="text-xs font-bold mb-2" style={{ 
-                                      color: '#000000',
-                                      fontFamily: "'Poppins', sans-serif",
-                                    }}>
+                                color: '#000000',
+                                fontFamily: "'Poppins', sans-serif",
+                              }}>
                                       Test Scores (klik op segment voor details):
-                                    </div>
+                              </div>
                                     <div className="flex flex-wrap gap-2">
                                       {(() => {
                                         // Group tests by segment sequence and keep only the highest score for each segment
@@ -1143,37 +1143,37 @@ export default function ParentDashboard() {
                                                   setExpandedSegments(newExpanded);
                                                 }}
                                                 className="px-3 py-2 rounded-lg cursor-pointer transition-all hover:opacity-80"
-                                                style={{
-                                                  background: test.percentageScore >= 67 
-                                                    ? 'rgba(76, 175, 80, 0.3)' 
-                                                    : test.percentageScore >= 33 
-                                                    ? 'rgba(255, 152, 0, 0.3)' 
-                                                    : 'rgba(244, 67, 54, 0.3)',
-                                                  border: `2px solid ${
-                                                    test.percentageScore >= 67 
-                                                      ? '#4caf50' 
-                                                      : test.percentageScore >= 33 
-                                                      ? '#ff9800' 
-                                                      : '#f44336'
-                                                  }`,
-                                                }}
-                                              >
-                                                <div className="flex items-center justify-between">
+                                    style={{
+                                      background: test.percentageScore >= 67 
+                                        ? 'rgba(76, 175, 80, 0.3)' 
+                                        : test.percentageScore >= 33 
+                                        ? 'rgba(255, 152, 0, 0.3)' 
+                                        : 'rgba(244, 67, 54, 0.3)',
+                                      border: `2px solid ${
+                                        test.percentageScore >= 67 
+                                          ? '#4caf50' 
+                                          : test.percentageScore >= 33 
+                                          ? '#ff9800' 
+                                          : '#f44336'
+                                      }`,
+                                    }}
+                                  >
+                                    <div className="flex items-center justify-between">
                                                   <div className="flex items-center gap-2">
                                                     <span className="text-xs">{isExpanded ? '▼' : '▶'}</span>
                                                     <span className="text-xs font-bold" style={{ color: '#000000' }}>
                                                       Segment {segmentSeq}:
-                                                    </span>
+                                      </span>
                                                     <span className="text-xs font-bold" style={{ 
-                                                      color: test.percentageScore >= 67 
-                                                        ? '#4caf50' 
-                                                        : test.percentageScore >= 33 
-                                                        ? '#ff9800' 
-                                                        : '#f44336',
-                                                    }}>
-                                                      {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
-                                                    </span>
-                                                  </div>
+                                        color: test.percentageScore >= 67 
+                                          ? '#4caf50' 
+                                          : test.percentageScore >= 33 
+                                          ? '#ff9800' 
+                                          : '#f44336',
+                                      }}>
+                                        {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
+                                      </span>
+                                    </div>
                                                   {incorrectAnswers.length > 0 && (
                                                     <span className="text-xs px-1.5 py-0.5 rounded" style={{
                                                       background: '#ff9800',
@@ -1205,28 +1205,28 @@ export default function ParentDashboard() {
                                                                 {new Date(item.date).toLocaleDateString('nl-NL')}
                                                               </div>
                                                             )}
-                                                          </div>
-                                                        ))}
-                                                      </div>
-                                                    </div>
-                                                  ) : (
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
                                                     <div className="p-2 rounded bg-gray-50 border-l-4 border-gray-300">
                                                       <div className="text-xs text-gray-600">
                                                         Geen fout beantwoorde vragen voor dit segment. Goed gedaan! 🎉
                                                       </div>
                                                     </div>
                                                   )}
-                                                </div>
-                                              )}
-                                            </div>
-                                          );
+                            </div>
+                          )}
+                        </div>
+                      );
                                         });
                                       })()}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                  </div>
+                </div>
+              )}
+                        </div>
+                        </div>
 
                             {/* Right: Small Delete Button */}
                             <button
@@ -1264,140 +1264,8 @@ export default function ParentDashboard() {
                             >
                               Delete
                             </button>
-                          </div>
-
-                          {/* Test Results - Clickable Segments with Incorrect Answers */}
-                          {story.testResults && story.testResults.length > 0 && (
-                            <div className="mt-2 pt-2 border-t" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
-                              <div className="text-xs font-bold mb-2" style={{ 
-                                color: '#000000',
-                                fontFamily: "'Poppins', sans-serif",
-                              }}>
-                                Test Scores (klik op segment voor details):
-                              </div>
-                              <div className="flex flex-wrap gap-2">
-                                {(() => {
-                                  // Group tests by segment sequence and keep only the highest score for each segment
-                                  const segmentMap = new Map<number, any>();
-                                  
-                                  story.testResults.forEach((test: any) => {
-                                    const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
-                                    const existing = segmentMap.get(segmentSeq);
-                                    
-                                    // Keep the test with the highest score (or percentage score)
-                                    if (!existing || test.percentageScore > existing.percentageScore) {
-                                      segmentMap.set(segmentSeq, test);
-                                    }
-                                  });
-                                  
-                                  // Convert to array and sort by segment sequence
-                                  const bestScores = Array.from(segmentMap.values())
-                                    .sort((a, b) => (a.segmentSequence || a.segment_sequence || 1) - (b.segmentSequence || b.segment_sequence || 1));
-                                  
-                                  return bestScores.map((test: any, testIdx: number) => {
-                                    const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
-                                    const segmentKey = `${sessionId}-segment-${segmentSeq}`;
-                                    const isExpanded = expandedSegments.has(segmentKey);
-                                    const incorrectAnswers = getIncorrectAnswersForSegment(segmentSeq, test);
-                                    
-                                    return (
-                                      <div key={test.id || `segment-${segmentSeq}-${testIdx}`} className="w-full">
-                                        <div
-                                          onClick={() => {
-                                            const newExpanded = new Set(expandedSegments);
-                                            if (isExpanded) {
-                                              newExpanded.delete(segmentKey);
-                                            } else {
-                                              newExpanded.add(segmentKey);
-                                            }
-                                            setExpandedSegments(newExpanded);
-                                          }}
-                                          className="px-3 py-2 rounded-lg cursor-pointer transition-all hover:opacity-80"
-                                          style={{
-                                            background: test.percentageScore >= 67 
-                                              ? 'rgba(76, 175, 80, 0.3)' 
-                                              : test.percentageScore >= 33 
-                                              ? 'rgba(255, 152, 0, 0.3)' 
-                                              : 'rgba(244, 67, 54, 0.3)',
-                                            border: `2px solid ${
-                                              test.percentageScore >= 67 
-                                                ? '#4caf50' 
-                                                : test.percentageScore >= 33 
-                                                ? '#ff9800' 
-                                                : '#f44336'
-                                            }`,
-                                          }}
-                                        >
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                              <span className="text-xs">{isExpanded ? '▼' : '▶'}</span>
-                                              <span className="text-xs font-bold" style={{ color: '#000000' }}>
-                                                Segment {segmentSeq}:
-                                              </span>
-                                              <span className="text-xs font-bold" style={{ 
-                                                color: test.percentageScore >= 67 
-                                                  ? '#4caf50' 
-                                                  : test.percentageScore >= 33 
-                                                  ? '#ff9800' 
-                                                  : '#f44336',
-                                              }}>
-                                                {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
-                                              </span>
-                                            </div>
-                                            {incorrectAnswers.length > 0 && (
-                                              <span className="text-xs px-1.5 py-0.5 rounded" style={{
-                                                background: '#ff9800',
-                                                color: '#ffffff',
-                                                fontWeight: 600,
-                                              }}>
-                                                {incorrectAnswers.length} fout
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
-                                        
-                                        {/* Expanded: Show Incorrect Answers or message */}
-                                        {isExpanded && (
-                                          <div className="mt-2 ml-4">
-                                            {incorrectAnswers.length > 0 ? (
-                                              <div className="p-2 rounded bg-yellow-50 border-l-4 border-yellow-500">
-                                                <div className="text-xs font-bold mb-1" style={{ color: '#000000' }}>
-                                                  💡 Leermomenten - Fout beantwoorde vragen:
-                                                </div>
-                                                <div className="space-y-2">
-                                                  {incorrectAnswers.map((item: any, itemIdx: number) => (
-                                                    <div key={itemIdx} className="text-xs p-2 bg-white rounded border border-yellow-300">
-                                                      <div className="font-semibold text-gray-800 mb-1">{item.question}</div>
-                                                      <div className="text-red-600 mb-0.5">Kind antwoordde: "{item.childAnswer}"</div>
-                                                      <div className="text-green-600">Juiste antwoord: "{item.correctAnswer}"</div>
-                                                      {item.date && (
-                                                        <div className="text-xs text-gray-500 mt-1">
-                                                          {new Date(item.date).toLocaleDateString('nl-NL')}
-                                                        </div>
-                                                      )}
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <div className="p-2 rounded bg-gray-50 border-l-4 border-gray-300">
-                                                <div className="text-xs text-gray-600">
-                                                  Geen fout beantwoorde vragen voor dit segment. Goed gedaan! 🎉
-                                                </div>
-                                              </div>
-                                            )}
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  });
-                                    })()}
-                                    </div>
-                                  </div>
-                                )}
-                            </div>
-                          )}
-                        </div>
+                      </div>
+                  </div>
                       );
                     })}
                   </div>
