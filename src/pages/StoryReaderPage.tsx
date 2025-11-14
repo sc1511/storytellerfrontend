@@ -841,9 +841,16 @@ export default function StoryReaderPage() {
         }, 500);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis bij het voortzetten van het verhaal';
+      // Log technical details to console only
+      console.error('Error ending story (technical):', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code,
+        status: (error as any)?.response?.status,
+      });
+      // User-friendly error for children
+      const errorMessage = 'Oeps! Er ging iets mis. Probeer het opnieuw! 😊';
       setError(errorMessage);
-      alert(`Fout bij het voortzetten van het verhaal: ${errorMessage}`);
+      alert(errorMessage);
     } finally {
       setLoading(false);
       setIsEndingStory(false);
