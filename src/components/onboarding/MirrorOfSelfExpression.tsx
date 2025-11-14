@@ -191,6 +191,8 @@ function AvatarRevealVideo({
             objectFit: 'cover',
             objectPosition: 'center',
           }}
+          loading="eager"
+          decoding="async"
         />
       ) : (
         <video
@@ -200,6 +202,7 @@ function AvatarRevealVideo({
           loop={false}
           muted
           playsInline
+          preload="metadata"
           className="w-full h-full object-cover"
           style={{
             width: '100%',
@@ -462,26 +465,26 @@ export function MirrorOfSelfExpression({
           ease: 'power2.out'
         }, '-=0.2')
 
-      // Continuous animations
+      // Continuous animations - Reduced for better performance
       gsap.utils.toArray('.floating-circle').forEach((circle: any, i) => {
         gsap.to(circle, {
-          y: `random(-80, 80)`,
-          x: `random(-80, 80)`,
-          scale: `random(0.7, 1.4)`,
-          duration: `random(4, 8)`,
+          y: `random(-40, 40)`, // Reduced movement
+          x: `random(-40, 40)`, // Reduced movement
+          scale: `random(0.8, 1.2)`, // Reduced scale variation
+          duration: `random(6, 10)`, // Slower = less CPU
           repeat: -1,
           yoyo: true,
           ease: 'sine.inOut',
-          delay: i * 0.2
+          delay: i * 0.3 // More spacing
         })
       })
 
-      // Gentle floating for avatars
+      // Gentle floating for avatars - Reduced
       avatarRefs.current.forEach((avatar, i) => {
         if (avatar) {
           gsap.to(avatar, {
-            y: -10,
-            duration: 2 + i * 0.2,
+            y: -5, // Reduced movement
+            duration: 3 + i * 0.3, // Slower = less CPU
             repeat: -1,
             yoyo: true,
             ease: 'sine.inOut'
