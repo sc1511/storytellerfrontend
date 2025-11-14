@@ -111,7 +111,7 @@ const ageSteps = [
     color: KPOP_COLORS.neonPink,
     gradient: [KPOP_COLORS.neonPink, KPOP_COLORS.neonMagenta],
     tagline: 'Eerste avonturen!',
-    icon: '/icon_heart-removebg-preview.png',
+    icon: '/icon_leaf-removebg-preview.png',
   },
   {
     age: '6-8',
