@@ -176,7 +176,7 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col"
         style={{
           background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
           border: `3px solid ${KPOP_COLORS.neonPurple}`,
@@ -188,9 +188,9 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {/* Header - Fixed */}
         <div
-          className="flex items-center justify-between p-6 border-b-2"
+          className="flex items-center justify-between p-6 border-b-2 flex-shrink-0"
           style={{
             borderColor: `${KPOP_COLORS.neonCyan}44`,
           }}
@@ -219,8 +219,11 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 120px)' }}>
+        {/* Content - Scrollable */}
+        <div className="p-6 overflow-y-auto flex-1 min-h-0" style={{ 
+          maxHeight: 'calc(90vh - 120px)',
+          WebkitOverflowScrolling: 'touch',
+        }}>
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <p
