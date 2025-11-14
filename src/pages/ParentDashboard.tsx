@@ -1225,47 +1225,9 @@ export default function ParentDashboard() {
                   </div>
                 </div>
               )}
+                            </div>
+                          )}
                         </div>
-                        </div>
-
-                            {/* Right: Small Delete Button */}
-                            <button
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) {
-                                  return;
-                                }
-                                try {
-                                  await axios.delete(
-                                    `${API_BASE_URL}/auth/parent/story/${sessionId}`,
-                                    {
-                                      headers: {
-                                        Authorization: `Bearer ${token}`,
-                                      },
-                                    }
-                                  );
-                                  // Refresh report data
-                                  if (reportData?.childProfileId) {
-                                    handleRequestReport(reportData.childProfileId, reportData.childName || '');
-                                  }
-                                  } catch (err: any) {
-                                    alert(getUserFriendlyError(err, 'Kon het verhaal niet verwijderen. Probeer het later opnieuw.'));
-                                  }
-                              }}
-                              className="px-2 py-1 text-xs rounded transition-all hover:bg-red-100"
-                              style={{
-                                background: '#f5f5f5',
-                                color: '#d32f2f',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                border: '1px solid #d32f2f',
-                              }}
-                              title="Verhaal verwijderen"
-                            >
-                              Delete
-                            </button>
-                      </div>
-                  </div>
                       );
                     })}
                   </div>

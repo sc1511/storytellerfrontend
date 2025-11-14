@@ -1645,9 +1645,9 @@ export default function StoryReaderPage() {
                     // Only show button if there are questions AND test is not already completed
                     // OR if it's the last segment and story is not completed (allow retaking last test)
                     const isLastSegment = currentSegmentIndex === currentSession.story_segments.length - 1;
-                    const canTakeTest = hasQuestions && (!isTestAlreadyCompleted || (isLastSegment && !currentSession.completed));
+                    const canShowTestButton = hasQuestions && (!isTestAlreadyCompleted || (isLastSegment && !currentSession.completed));
                     
-                    if (!canTakeTest) {
+                    if (!canShowTestButton) {
                       return null; // Don't show button if test is already completed (except last segment if story not completed)
                     }
                     
