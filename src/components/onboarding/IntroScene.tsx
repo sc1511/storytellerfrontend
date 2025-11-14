@@ -192,12 +192,13 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
             }}
           />
           
-          {/* Hover tooltip - "Klik voor meer info!" */}
+          {/* Hover tooltip - "Klik voor meer info!" - Direct onder de kat */}
           {isCatHovered && !showCatMessage && (
             <div
               ref={catTooltipRef}
-              className="absolute left-1/2 -translate-x-1/2 top-[calc(40vh+20px)] z-50 px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
+              className="absolute left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
               style={{
+                top: 'calc(40vh - 20px)', // Direct onder de kat (kat is 40vh, tooltip iets erboven)
                 background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
                 border: `2px solid ${KPOP_COLORS.neonCyan}`,
                 boxShadow: `
