@@ -340,39 +340,7 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
         overflowY: 'hidden',
       }}
     >
-      {/* Static Korean letters background - like StoryGeneratorPage */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(30)].map((_, i) => {
-          const koreanWords = ['이야기', '상상', '모험', '마법', '별', '우주', '꿈', '환상', '신비', '기적'];
-          const word = koreanWords[i % koreanWords.length];
-          const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
-          const color = colors[i % colors.length];
-          return (
-            <div
-              key={`korean-${i}`}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                fontSize: `${20 + Math.random() * 40}px`,
-                fontFamily: "'Noto Sans KR', sans-serif",
-                fontWeight: 900,
-                color: color,
-                opacity: 0.15 + Math.random() * 0.1,
-                textShadow: `
-                  0 0 10px ${color}66,
-                  0 0 20px ${color}44,
-                  0 0 30px ${color}22
-                `,
-                transform: `rotate(${Math.random() * 360}deg)`,
-                pointerEvents: 'none',
-              }}
-            >
-              {word}
-            </div>
-          );
-        })}
-      </div>
+      {/* Static Korean letters removed for better performance */}
 
       {/* Rolling Korean Background - Alleen onderste horizontale scrolling */}
       <RollingKoreanBackground />
@@ -506,10 +474,10 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
         </div>
       )}
 
-      {/* Neon Geometric Shapes and Lines - Decorative Background Elements */}
+      {/* Neon Geometric Shapes and Lines - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {/* Diagonal lines */}
-        {[...Array(10)].map((_, i) => (
+        {/* Diagonal lines - Reduced */}
+        {[...Array(5)].map((_, i) => (
           <div
             key={`line-${i}`}
             className="absolute"
@@ -522,12 +490,13 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
               transform: `rotate(${-45 + Math.random() * 90}deg)`,
               boxShadow: `0 0 15px ${[KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan][i % 4]}44`,
               opacity: 0.25 + Math.random() * 0.25,
+              // No animation - static for better performance
             }}
           />
         ))}
         
-        {/* Geometric shapes */}
-        {[...Array(15)].map((_, i) => {
+        {/* Geometric shapes - Reduced */}
+        {[...Array(8)].map((_, i) => {
           const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
           const color = colors[i % colors.length];
           const size = 25 + Math.random() * 50;
@@ -549,16 +518,16 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
                 `,
                 opacity: 0.15 + Math.random() * 0.25,
                 transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${3 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
+                // No animation - static for better performance
               }}
             />
           );
         })}
       </div>
 
-      {/* Noodles icons in background - scattered */}
+      {/* Noodles icons in background - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(5)].map((_, i) => {
+        {[...Array(2)].map((_, i) => {
           const size = 80 + Math.random() * 120;
           return (
             <div
@@ -571,8 +540,7 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
                 height: `${size}px`,
                 opacity: 0.15 + Math.random() * 0.15,
                 transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${5 + Math.random() * 5}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
+                // No animation - static for better performance
               }}
             >
               <img
@@ -591,14 +559,14 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
         })}
       </div>
 
-      {/* Background particles / Stars - Reageren op hover */}
+      {/* Background particles / Stars - Reduced for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(60)].map((_, i) => {
+        {[...Array(20)].map((_, i) => {
           const starColor = ['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF', '#FFD700'][i % 5];
           return (
             <div
               key={`star-${i}`}
-              className={`absolute rounded-full star-particle ${hoveredIndex !== null ? 'star-hover' : ''}`}
+              className="absolute rounded-full star-particle"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -606,8 +574,7 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
                 height: `${1 + Math.random() * 5}px`,
                 background: starColor,
                 boxShadow: `0 0 ${3 + Math.random() * 8}px ${starColor}`,
-                animation: `neon-flicker ${2 + Math.random() * 5}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 4}s`,
+                // No animation - static for better performance
               }}
             />
           );
