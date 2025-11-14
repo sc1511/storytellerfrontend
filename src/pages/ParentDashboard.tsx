@@ -1095,6 +1095,136 @@ export default function ParentDashboard() {
                                     )}
                                   </div>
                                 </div>
+                                
+                                {/* Test Results - Clickable Segments with Incorrect Answers */}
+                                {story.testResults && story.testResults.length > 0 && (
+                                  <div className="mt-2 pt-2 border-t" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
+                                    <div className="text-xs font-bold mb-2" style={{ 
+                                      color: '#000000',
+                                      fontFamily: "'Poppins', sans-serif",
+                                    }}>
+                                      Test Scores (klik op segment voor details):
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {(() => {
+                                        // Group tests by segment sequence and keep only the highest score for each segment
+                                        const segmentMap = new Map<number, any>();
+                                        
+                                        story.testResults.forEach((test: any) => {
+                                          const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
+                                          const existing = segmentMap.get(segmentSeq);
+                                          
+                                          // Keep the test with the highest score (or percentage score)
+                                          if (!existing || test.percentageScore > existing.percentageScore) {
+                                            segmentMap.set(segmentSeq, test);
+                                          }
+                                        });
+                                        
+                                        // Convert to array and sort by segment sequence
+                                        const bestScores = Array.from(segmentMap.values())
+                                          .sort((a, b) => (a.segmentSequence || a.segment_sequence || 1) - (b.segmentSequence || b.segment_sequence || 1));
+                                        
+                                        return bestScores.map((test: any, testIdx: number) => {
+                                          const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
+                                          const segmentKey = `${sessionId}-segment-${segmentSeq}`;
+                                          const isExpanded = expandedSegments.has(segmentKey);
+                                          const incorrectAnswers = getIncorrectAnswersForSegment(segmentSeq, test);
+                                          
+                                          return (
+                                            <div key={test.id || `segment-${segmentSeq}-${testIdx}`} className="w-full">
+                                              <div
+                                                onClick={() => {
+                                                  const newExpanded = new Set(expandedSegments);
+                                                  if (isExpanded) {
+                                                    newExpanded.delete(segmentKey);
+                                                  } else {
+                                                    newExpanded.add(segmentKey);
+                                                  }
+                                                  setExpandedSegments(newExpanded);
+                                                }}
+                                                className="px-3 py-2 rounded-lg cursor-pointer transition-all hover:opacity-80"
+                                                style={{
+                                                  background: test.percentageScore >= 67 
+                                                    ? 'rgba(76, 175, 80, 0.3)' 
+                                                    : test.percentageScore >= 33 
+                                                    ? 'rgba(255, 152, 0, 0.3)' 
+                                                    : 'rgba(244, 67, 54, 0.3)',
+                                                  border: `2px solid ${
+                                                    test.percentageScore >= 67 
+                                                      ? '#4caf50' 
+                                                      : test.percentageScore >= 33 
+                                                      ? '#ff9800' 
+                                                      : '#f44336'
+                                                  }`,
+                                                }}
+                                              >
+                                                <div className="flex items-center justify-between">
+                                                  <div className="flex items-center gap-2">
+                                                    <span className="text-xs">{isExpanded ? '▼' : '▶'}</span>
+                                                    <span className="text-xs font-bold" style={{ color: '#000000' }}>
+                                                      Segment {segmentSeq}:
+                                                    </span>
+                                                    <span className="text-xs font-bold" style={{ 
+                                                      color: test.percentageScore >= 67 
+                                                        ? '#4caf50' 
+                                                        : test.percentageScore >= 33 
+                                                        ? '#ff9800' 
+                                                        : '#f44336',
+                                                    }}>
+                                                      {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
+                                                    </span>
+                                                  </div>
+                                                  {incorrectAnswers.length > 0 && (
+                                                    <span className="text-xs px-1.5 py-0.5 rounded" style={{
+                                                      background: '#ff9800',
+                                                      color: '#ffffff',
+                                                      fontWeight: 600,
+                                                    }}>
+                                                      {incorrectAnswers.length} fout
+                                                    </span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                              
+                                              {/* Expanded: Show Incorrect Answers or message */}
+                                              {isExpanded && (
+                                                <div className="mt-2 ml-4">
+                                                  {incorrectAnswers.length > 0 ? (
+                                                    <div className="p-2 rounded bg-yellow-50 border-l-4 border-yellow-500">
+                                                      <div className="text-xs font-bold mb-1" style={{ color: '#000000' }}>
+                                                        💡 Leermomenten - Fout beantwoorde vragen:
+                                                      </div>
+                                                      <div className="space-y-2">
+                                                        {incorrectAnswers.map((item: any, itemIdx: number) => (
+                                                          <div key={itemIdx} className="text-xs p-2 bg-white rounded border border-yellow-300">
+                                                            <div className="font-semibold text-gray-800 mb-1">{item.question}</div>
+                                                            <div className="text-red-600 mb-0.5">Kind antwoordde: "{item.childAnswer}"</div>
+                                                            <div className="text-green-600">Juiste antwoord: "{item.correctAnswer}"</div>
+                                                            {item.date && (
+                                                              <div className="text-xs text-gray-500 mt-1">
+                                                                {new Date(item.date).toLocaleDateString('nl-NL')}
+                                                              </div>
+                                                            )}
+                                                          </div>
+                                                        ))}
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="p-2 rounded bg-gray-50 border-l-4 border-gray-300">
+                                                      <div className="text-xs text-gray-600">
+                                                        Geen fout beantwoorde vragen voor dit segment. Goed gedaan! 🎉
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        });
+                                      })()}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
 
