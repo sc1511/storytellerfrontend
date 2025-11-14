@@ -2726,43 +2726,44 @@ export default function StoryReaderPage() {
             
             // Check if a choice has already been made for this segment
             const choiceAlreadyMade = currentSegment?.choice_made;
-            const isLastSegment = currentSegmentIndex === currentSession.story_segments.length - 1;
+            // isLastSegment is already declared above (line 2537), reuse it
             
             // If there are choices, show choices + avatar
             // BUT: only show choices if:
             // 1. It's the last segment (can make new choices)
             // 2. OR no choice has been made yet (first time reading)
-            return hasChoices && (isLastSegment || !choiceAlreadyMade) ? (
-            <>
-              <h3 
-                className="text-base font-bold mb-2 text-center"
-                style={{
-                  color: KPOP_COLORS.neonPurple,
-                  fontFamily: "'Orbitron', sans-serif",
-                  fontWeight: 900,
-                  letterSpacing: '0.15em',
-                  flexShrink: 0,
-                  textShadow: `0 0 10px ${KPOP_COLORS.neonPurple}, 0 0 20px ${KPOP_COLORS.neonPurple}66`,
-                }}
-              >
-                Wat doe je nu? 🤔
-              </h3>
-              <div 
-                ref={choicesRef} 
-                className="flex flex-col gap-2"
-                style={{ 
-                  flexShrink: 0,
-                  overflowY: 'visible',
-                  flex: '0 0 auto',
-                  minHeight: 0,
-                  position: 'relative',
-                  zIndex: 2,
-                  paddingBottom: '0',
-                  marginBottom: '0',
-                  maxHeight: 'none',
-                }}
-              >
-                {currentSegment.next_choices.map((choice, index) => {
+            if (hasChoices && (isLastSegment || !choiceAlreadyMade)) {
+              return (
+              <>
+                <h3 
+                  className="text-base font-bold mb-2 text-center"
+                  style={{
+                    color: KPOP_COLORS.neonPurple,
+                    fontFamily: "'Orbitron', sans-serif",
+                    fontWeight: 900,
+                    letterSpacing: '0.15em',
+                    flexShrink: 0,
+                    textShadow: `0 0 10px ${KPOP_COLORS.neonPurple}, 0 0 20px ${KPOP_COLORS.neonPurple}66`,
+                  }}
+                >
+                  Wat doe je nu? 🤔
+                </h3>
+                <div 
+                  ref={choicesRef} 
+                  className="flex flex-col gap-2"
+                  style={{ 
+                    flexShrink: 0,
+                    overflowY: 'visible',
+                    flex: '0 0 auto',
+                    minHeight: 0,
+                    position: 'relative',
+                    zIndex: 2,
+                    paddingBottom: '0',
+                    marginBottom: '0',
+                    maxHeight: 'none',
+                  }}
+                >
+                  {currentSegment.next_choices.map((choice, index) => {
                   // Handle different choice formats: object with label/description, or just string
                   let choiceLabel = '';
                   let choiceDescription = '';
@@ -2894,76 +2895,84 @@ export default function StoryReaderPage() {
                     </button>
                   );
                 })}
-              </div>
-            </>
-            ) : choiceAlreadyMade ? (
-              // Show the choice that was already made (for old segments)
-              <div className="flex flex-col items-center gap-3 p-4 rounded-xl" style={{
-                background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-                border: '2px solid #4caf50',
-                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-              }}>
-                <h3 
-                  className="text-base font-bold text-center"
-                  style={{
-                    color: '#2e7d32',
-                    fontFamily: "'Poppins', sans-serif",
-                  }}
-                >
-                  ✅ Je hebt al gekozen:
-                </h3>
-                <div className="px-4 py-3 rounded-lg" style={{
-                  background: '#ffffff',
-                  border: '2px solid #4caf50',
-                }}>
-                  <p 
-                    className="text-sm font-semibold text-center"
-                    style={{
-                      color: '#1b5e20',
+                </div>
+                
+                {/* Test Reminder Message - Above Avatar on Last Segment */}
+                {isLastSegment && currentSegment?.comprehension_questions && 
+                 Array.isArray(currentSegment.comprehension_questions) && 
+                 currentSegment.comprehension_questions.length > 0 &&
+                 !testCompletedForSegment[currentSegmentIndex] && (
+                  <div className="mb-3 px-3 py-2 rounded-lg text-center" style={{
+                    background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
+                    border: '2px solid #ffc107',
+                    boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
+                  }}>
+                    <p className="text-sm font-bold" style={{
+                      color: '#856404',
                       fontFamily: "'Comfortaa', sans-serif",
+                    }}>
+                      ⚠️ Vergeet niet je test nog te doen!
+                    </p>
+                  </div>
+                )}
+              </>
+              );
+            }
+            
+            // Show the choice that was already made (for old segments)
+            if (choiceAlreadyMade) {
+              return (
+                <div className="flex flex-col items-center gap-3 p-4 rounded-xl" style={{
+                  background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+                  border: '2px solid #4caf50',
+                  boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                }}>
+                  <h3 
+                    className="text-base font-bold text-center"
+                    style={{
+                      color: '#2e7d32',
+                      fontFamily: "'Poppins', sans-serif",
                     }}
                   >
-                    {(() => {
-                      // Extract choice label (A, B, C, D) from choice_made if possible
-                      const choiceMade = currentSegment.choice_made || '';
-                      const match = choiceMade.match(/^([A-D])\s*-/);
-                      if (match) {
-                        return `${match[1]}: ${choiceMade.replace(/^[A-D]\s*-\s*/, '')}`;
-                      }
-                      return choiceMade;
-                    })()}
-                  </p>
-                </div>
-                <p 
-                  className="text-xs text-center"
-                  style={{
-                    color: '#666666',
-                    fontFamily: "'Poppins', sans-serif",
-                  }}
-                >
-                  Je kunt deze keuze niet meer wijzigen
-                </p>
-              </div>
-            ) : null}
-              
-              {/* Test Reminder Message - Above Avatar on Last Segment */}
-              {isLastSegment && currentSegment?.comprehension_questions && 
-               Array.isArray(currentSegment.comprehension_questions) && 
-               currentSegment.comprehension_questions.length > 0 &&
-               !testCompletedForSegment[currentSegmentIndex] && (
-                <div className="mb-3 px-3 py-2 rounded-lg text-center" style={{
-                  background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
-                  border: '2px solid #ffc107',
-                  boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
-                }}>
-                  <p className="text-sm font-bold" style={{
-                    color: '#856404',
-                    fontFamily: "'Comfortaa', sans-serif",
+                    ✅ Je hebt al gekozen:
+                  </h3>
+                  <div className="px-4 py-3 rounded-lg" style={{
+                    background: '#ffffff',
+                    border: '2px solid #4caf50',
                   }}>
-                    ⚠️ Vergeet niet je test nog te doen!
+                    <p 
+                      className="text-sm font-semibold text-center"
+                      style={{
+                        color: '#1b5e20',
+                        fontFamily: "'Comfortaa', sans-serif",
+                      }}
+                    >
+                      {(() => {
+                        // Extract choice label (A, B, C, D) from choice_made if possible
+                        const choiceMade = currentSegment.choice_made || '';
+                        const match = choiceMade.match(/^([A-D])\s*-/);
+                        if (match) {
+                          return `${match[1]}: ${choiceMade.replace(/^[A-D]\s*-\s*/, '')}`;
+                        }
+                        return choiceMade;
+                      })()}
+                    </p>
+                  </div>
+                  <p 
+                    className="text-xs text-center"
+                    style={{
+                      color: '#666666',
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    Je kunt deze keuze niet meer wijzigen
                   </p>
                 </div>
-              )}
+              );
+            }
+            
+            // No choices and no choice made - return null
+            return null;
               
               {/* Avatar - Moved to bottom of choices panel, larger container for book reading - Clickable */}
               <div 
