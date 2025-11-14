@@ -402,7 +402,7 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
       {showCatMessage && (
         <div
           ref={catMessageRef}
-          className="absolute left-[calc(18vh+20px)] bottom-[calc(2vh+20px)] z-50 px-6 py-4 rounded-3xl shadow-2xl"
+          className="absolute left-[calc(18vh+80px)] bottom-[calc(2vh+20px)] z-50 px-6 py-4 rounded-3xl shadow-2xl"
           style={{
             background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
             border: `3px solid ${KPOP_COLORS.neonPink}`,
