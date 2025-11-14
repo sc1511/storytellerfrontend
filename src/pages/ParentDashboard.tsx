@@ -28,6 +28,9 @@ export default function ParentDashboard() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportData, setReportData] = useState<any>(null);
   const [visibleCodes, setVisibleCodes] = useState<Set<string>>(new Set());
+  const [storiesDropdownOpen, setStoriesDropdownOpen] = useState(true);
+  const [selectedStories, setSelectedStories] = useState<Set<string>>(new Set());
+  const [expandedSegments, setExpandedSegments] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (token) {
@@ -181,6 +184,35 @@ export default function ParentDashboard() {
       fetchChildren(); // Refresh list
     } catch (err: any) {
       setError(err.response?.data?.message || 'Fout bij verwijderen kind');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async (sessionIds: string[]) => {
+    if (!token) return;
+    
+    setLoading(true);
+    try {
+      // Delete all selected stories
+      await Promise.all(
+        sessionIds.map(sessionId =>
+          axios.delete(`${API_BASE_URL}/auth/parent/story/${sessionId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
+      
+      // Clear selection
+      setSelectedStories(new Set());
+      
+      // Refresh report data
+      if (reportData?.childProfileId) {
+        await handleRequestReport(reportData.childProfileId, reportData.childName || '');
+      }
+    } catch (err: any) {
+      console.error('Error deleting stories:', err);
+      alert('Fout bij verwijderen verhalen: ' + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -548,7 +580,7 @@ export default function ParentDashboard() {
           onClick={() => setShowReportModal(false)}
         >
           <div 
-            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 rounded-t-2xl flex justify-between items-center">
@@ -791,8 +823,41 @@ export default function ParentDashboard() {
               {/* Stories with Test Results */}
               {reportData.stories && reportData.stories.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📖 Verhalen van deze week</h3>
-                  <div className="flex flex-col gap-4">
+                  {/* Dropdown Header */}
+                  <div 
+                    className="flex items-center justify-between cursor-pointer p-3 rounded-lg mb-3 transition-all hover:bg-gray-50"
+                    onClick={() => setStoriesDropdownOpen(!storiesDropdownOpen)}
+                    style={{
+                      background: storiesDropdownOpen ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f5f7fa',
+                      color: storiesDropdownOpen ? '#ffffff' : '#667eea',
+                    }}
+                  >
+                    <h3 className="text-xl font-bold flex items-center gap-2">
+                      <span>{storiesDropdownOpen ? '▼' : '▶'}</span>
+                      <span>📖 Verhalen van deze week ({reportData.stories.length})</span>
+                    </h3>
+                    {selectedStories.size > 0 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const sessionIds = Array.from(selectedStories);
+                          if (window.confirm(`Weet je zeker dat je ${sessionIds.length} verhaal(en) wilt verwijderen? Dit kan niet ongedaan worden gemaakt.`)) {
+                            handleBulkDelete(sessionIds);
+                          }
+                        }}
+                        className="px-3 py-1 text-sm rounded-lg font-bold transition-all hover:scale-105"
+                        style={{
+                          background: '#f44336',
+                          color: '#ffffff',
+                        }}
+                      >
+                        Verwijder ({selectedStories.size})
+                      </button>
+                    )}
+                  </div>
+                  
+                  {storiesDropdownOpen && (
+                  <div className="flex flex-col gap-3">
                     {reportData.stories.map((story: any, idx: number) => {
                       // Calculate average test score for this story using BEST scores per segment
                       let avgScore = null;
@@ -813,28 +878,57 @@ export default function ParentDashboard() {
                         }
                       }
                       
+                      const sessionId = story.session_id || story.sessionId;
+                      const isSelected = selectedStories.has(sessionId);
+                      
+                      // Get incorrect answers for this story's segments
+                      const getIncorrectAnswersForSegment = (segmentSeq: number) => {
+                        if (!reportData.incorrectAnswers) return [];
+                        return reportData.incorrectAnswers.filter((item: any) => {
+                          // Try to match by segment if available, otherwise by session
+                          return item.segmentSequence === segmentSeq || 
+                                 item.segment_sequence === segmentSeq ||
+                                 (item.session_id === sessionId && !item.segmentSequence && !item.segment_sequence);
+                        });
+                      };
+                      
                       return (
                         <div
-                          key={story.session_id || story.sessionId || idx}
-                          className="p-4 rounded-xl transition-all"
+                          key={sessionId || idx}
+                          className="p-3 rounded-lg transition-all"
                           style={{
                             background: story.isCompleted
                               ? 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)'
                               : 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
                             border: `2px solid ${story.isCompleted ? '#00bcd4' : '#9c27b0'}`,
                             boxShadow: story.isCompleted
-                              ? '0 0 20px rgba(0, 188, 212, 0.3)'
-                              : '0 0 20px rgba(156, 39, 176, 0.3)',
+                              ? '0 0 15px rgba(0, 188, 212, 0.2)'
+                              : '0 0 15px rgba(156, 39, 176, 0.2)',
                           }}
                         >
-                          {/* Horizontal Row Layout */}
-                          <div className="flex items-center justify-between gap-4">
-                            {/* Left: Story Info */}
-                            <div className="flex-1 flex items-center gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
+                          {/* Horizontal Row Layout - Compact */}
+                          <div className="flex items-center justify-between gap-3">
+                            {/* Left: Checkbox + Story Info */}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  const newSelected = new Set(selectedStories);
+                                  if (e.target.checked) {
+                                    newSelected.add(sessionId);
+                                  } else {
+                                    newSelected.delete(sessionId);
+                                  }
+                                  setSelectedStories(newSelected);
+                                }}
+                                className="w-4 h-4 cursor-pointer flex-shrink-0"
+                                style={{ accentColor: '#667eea' }}
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
                                   <h3
-                                    className="text-lg font-bold"
+                                    className="text-base font-bold truncate"
                                     style={{
                                       color: story.isCompleted ? '#006064' : '#4a148c',
                                       fontFamily: "'Poppins', sans-serif",
@@ -844,42 +938,36 @@ export default function ParentDashboard() {
                                   </h3>
                                   {story.isCompleted && (
                                     <span
-                                      className="text-xs px-2 py-1 rounded-full flex-shrink-0"
+                                      className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
                                       style={{
                                         background: '#00bcd4',
                                         color: '#ffffff',
                                         fontWeight: 600,
                                       }}
                                     >
-                                      ✓ Voltooid
+                                      ✓
                                     </span>
                                   )}
-                                </div>
-                                <div className="flex items-center gap-4 text-sm">
-                                  <span style={{ 
-                                    color: '#000000',
+                                  <span className="text-xs" style={{ 
+                                    color: '#666666',
                                     fontFamily: "'Poppins', sans-serif",
-                                    fontWeight: 600,
                                   }}>
                                     📅 {new Date(story.date || story.created_at).toLocaleDateString('nl-NL')}
                                   </span>
-                                  <span style={{ 
-                                    color: '#000000',
+                                  <span className="text-xs" style={{ 
+                                    color: '#666666',
                                     fontFamily: "'Poppins', sans-serif",
-                                    fontWeight: 600,
                                   }}>
-                                    📖 {story.segmentCount} {story.segmentCount === 1 ? 'segment' : 'segmenten'}
+                                    📖 {story.segmentCount} {story.segmentCount === 1 ? 'seg' : 'segs'}
                                   </span>
                                   {avgScore !== null && (
                                     <span 
+                                      className="text-xs px-2 py-0.5 rounded"
                                       style={{ 
                                         fontFamily: "'Poppins', sans-serif",
                                         fontWeight: 700,
-                                        fontSize: '1rem',
                                         background: story.isCompleted ? '#00bcd4' : '#9c27b0',
                                         color: '#ffffff',
-                                        padding: '4px 12px',
-                                        borderRadius: '12px',
                                       }}
                                     >
                                       ⭐ {avgScore}%
@@ -889,73 +977,53 @@ export default function ParentDashboard() {
                               </div>
                             </div>
 
-                            {/* Right: Delete Button */}
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={async () => {
-                                  if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen? Dit kan niet ongedaan worden gemaakt.')) {
-                                    return;
-                                  }
-                                  try {
-                                    await axios.delete(
-                                      `${API_BASE_URL}/auth/parent/story/${story.session_id}`,
-                                      {
-                                        headers: {
-                                          Authorization: `Bearer ${token}`,
-                                        },
-                                      }
-                                    );
-                                    // Refresh report data
-                                    if (reportData?.childProfileId) {
-                                      handleRequestReport(reportData.childProfileId, reportData.childName || '');
+                            {/* Right: Small Delete Button */}
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) {
+                                  return;
+                                }
+                                try {
+                                  await axios.delete(
+                                    `${API_BASE_URL}/auth/parent/story/${sessionId}`,
+                                    {
+                                      headers: {
+                                        Authorization: `Bearer ${token}`,
+                                      },
                                     }
-                                  } catch (err: any) {
-                                    console.error('Error deleting story:', err);
-                                    alert('Fout bij verwijderen verhaal: ' + (err.response?.data?.message || err.message));
+                                  );
+                                  // Refresh report data
+                                  if (reportData?.childProfileId) {
+                                    handleRequestReport(reportData.childProfileId, reportData.childName || '');
                                   }
-                                }}
-                                className="flex-shrink-0 hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center"
-                                style={{
-                                  width: '56px',
-                                  height: '56px',
-                                  borderRadius: '50%',
-                                  background: 'linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%)',
-                                  color: '#333333',
-                                  fontWeight: 700,
-                                  cursor: 'pointer',
-                                  border: '3px solid #ffffff',
-                                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.1)',
-                                  fontSize: '24px',
-                                  padding: 0,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}
-                                title="Verhaal verwijderen"
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.25), 0 0 30px rgba(0, 0, 0, 0.15)';
-                                  e.currentTarget.style.transform = 'scale(1.1)';
-                                  e.currentTarget.style.background = 'linear-gradient(135deg, #d0d0d0 0%, #a0a0a0 100%)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.1)';
-                                  e.currentTarget.style.transform = 'scale(1)';
-                                  e.currentTarget.style.background = 'linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%)';
-                                }}
-                              >
-                                🗑️
-                              </button>
-                            </div>
+                                } catch (err: any) {
+                                  console.error('Error deleting story:', err);
+                                  alert('Fout bij verwijderen verhaal: ' + (err.response?.data?.message || err.message));
+                                }
+                              }}
+                              className="px-2 py-1 text-xs rounded transition-all hover:bg-red-100"
+                              style={{
+                                background: '#f5f5f5',
+                                color: '#d32f2f',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: '1px solid #d32f2f',
+                              }}
+                              title="Verhaal verwijderen"
+                            >
+                              Delete
+                            </button>
                           </div>
 
-                          {/* Test Results - Below the row, collapsible or always visible */}
+                          {/* Test Results - Clickable Segments with Incorrect Answers */}
                           {story.testResults && story.testResults.length > 0 && (
-                            <div className="mt-3 pt-3 border-t-2" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
-                              <div className="text-sm font-bold mb-2" style={{ 
+                            <div className="mt-2 pt-2 border-t" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
+                              <div className="text-xs font-bold mb-2" style={{ 
                                 color: '#000000',
                                 fontFamily: "'Poppins', sans-serif",
                               }}>
-                                Test Scores (Beste score per segment):
+                                Test Scores (klik op segment voor details):
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 {(() => {
@@ -978,39 +1046,83 @@ export default function ParentDashboard() {
                                   
                                   return bestScores.map((test: any, testIdx: number) => {
                                     const segmentSeq = test.segmentSequence || test.segment_sequence || 1;
+                                    const segmentKey = `${sessionId}-segment-${segmentSeq}`;
+                                    const isExpanded = expandedSegments.has(segmentKey);
+                                    const incorrectAnswers = getIncorrectAnswersForSegment(segmentSeq);
+                                    
                                     return (
-                                      <div
-                                        key={test.id || `segment-${segmentSeq}-${testIdx}`}
-                                        className="px-3 py-2 rounded-lg"
-                                        style={{
-                                          background: test.percentageScore >= 67 
-                                            ? 'rgba(76, 175, 80, 0.3)' 
-                                            : test.percentageScore >= 33 
-                                            ? 'rgba(255, 152, 0, 0.3)' 
-                                            : 'rgba(244, 67, 54, 0.3)',
-                                          border: `2px solid ${
-                                            test.percentageScore >= 67 
-                                              ? '#4caf50' 
+                                      <div key={test.id || `segment-${segmentSeq}-${testIdx}`} className="w-full">
+                                        <div
+                                          onClick={() => {
+                                            const newExpanded = new Set(expandedSegments);
+                                            if (isExpanded) {
+                                              newExpanded.delete(segmentKey);
+                                            } else {
+                                              newExpanded.add(segmentKey);
+                                            }
+                                            setExpandedSegments(newExpanded);
+                                          }}
+                                          className="px-3 py-2 rounded-lg cursor-pointer transition-all hover:opacity-80"
+                                          style={{
+                                            background: test.percentageScore >= 67 
+                                              ? 'rgba(76, 175, 80, 0.3)' 
                                               : test.percentageScore >= 33 
-                                              ? '#ff9800' 
-                                              : '#f44336'
-                                          }`,
-                                        }}
-                                      >
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm font-bold" style={{ color: '#000000' }}>
-                                            Segment {segmentSeq}:
-                                          </span>
-                                          <span className="text-sm font-bold" style={{ 
-                                            color: test.percentageScore >= 67 
-                                              ? '#4caf50' 
-                                              : test.percentageScore >= 33 
-                                              ? '#ff9800' 
-                                              : '#f44336',
-                                          }}>
-                                            {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
-                                          </span>
+                                              ? 'rgba(255, 152, 0, 0.3)' 
+                                              : 'rgba(244, 67, 54, 0.3)',
+                                            border: `2px solid ${
+                                              test.percentageScore >= 67 
+                                                ? '#4caf50' 
+                                                : test.percentageScore >= 33 
+                                                ? '#ff9800' 
+                                                : '#f44336'
+                                            }`,
+                                          }}
+                                        >
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-xs">{isExpanded ? '▼' : '▶'}</span>
+                                              <span className="text-xs font-bold" style={{ color: '#000000' }}>
+                                                Segment {segmentSeq}:
+                                              </span>
+                                              <span className="text-xs font-bold" style={{ 
+                                                color: test.percentageScore >= 67 
+                                                  ? '#4caf50' 
+                                                  : test.percentageScore >= 33 
+                                                  ? '#ff9800' 
+                                                  : '#f44336',
+                                              }}>
+                                                {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
+                                              </span>
+                                            </div>
+                                            {incorrectAnswers.length > 0 && (
+                                              <span className="text-xs px-1.5 py-0.5 rounded" style={{
+                                                background: '#ff9800',
+                                                color: '#ffffff',
+                                                fontWeight: 600,
+                                              }}>
+                                                {incorrectAnswers.length} fout
+                                              </span>
+                                            )}
+                                          </div>
                                         </div>
+                                        
+                                        {/* Expanded: Show Incorrect Answers */}
+                                        {isExpanded && incorrectAnswers.length > 0 && (
+                                          <div className="mt-2 ml-4 p-2 rounded bg-yellow-50 border-l-4 border-yellow-500">
+                                            <div className="text-xs font-bold mb-1" style={{ color: '#000000' }}>
+                                              Fout beantwoorde vragen:
+                                            </div>
+                                            <div className="space-y-1">
+                                              {incorrectAnswers.map((item: any, itemIdx: number) => (
+                                                <div key={itemIdx} className="text-xs">
+                                                  <div className="font-semibold text-gray-800">{item.question}</div>
+                                                  <div className="text-red-600">Kind: "{item.childAnswer}"</div>
+                                                  <div className="text-green-600">Juist: "{item.correctAnswer}"</div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     );
                                   });
@@ -1022,6 +1134,7 @@ export default function ParentDashboard() {
                       );
                     })}
                   </div>
+                  )}
                 </div>
               )}
 
