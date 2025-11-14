@@ -3028,59 +3028,7 @@ export default function StoryReaderPage() {
               );
             }
             
-            // Show the choice that was already made (for old segments)
-            if (choiceAlreadyMade) {
-              return (
-                <div className="flex flex-col items-center gap-3 p-4 rounded-xl" style={{
-                  background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-                  border: '2px solid #4caf50',
-                  boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-                }}>
-                  <h3 
-                    className="text-base font-bold text-center"
-                    style={{
-                      color: '#2e7d32',
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                  >
-                    ✅ Je hebt al gekozen:
-                  </h3>
-                  <div className="px-4 py-3 rounded-lg" style={{
-                    background: '#ffffff',
-                    border: '2px solid #4caf50',
-                  }}>
-                    <p 
-                      className="text-sm font-semibold text-center"
-                style={{ 
-                        color: '#1b5e20',
-                        fontFamily: "'Comfortaa', sans-serif",
-                      }}
-                    >
-                      {(() => {
-                        // Extract choice label (A, B, C, D) from choice_made if possible
-                        const choiceMade = currentSegment.choice_made || '';
-                        const match = choiceMade.match(/^([A-D])\s*-/);
-                        if (match) {
-                          return `${match[1]}: ${choiceMade.replace(/^[A-D]\s*-\s*/, '')}`;
-                        }
-                        return choiceMade;
-                      })()}
-                    </p>
-                  </div>
-                  <p 
-                    className="text-xs text-center"
-                  style={{
-                      color: '#666666',
-                      fontFamily: "'Poppins', sans-serif",
-                  }}
-                  >
-                    Je kunt deze keuze niet meer wijzigen
-                  </p>
-              </div>
-              );
-            }
-            
-            // No choices and no choice made - return null
+            // No choices - return null
             return null;
           })()}
         </div>
