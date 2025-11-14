@@ -29,10 +29,18 @@ export default function LoginPage() {
   const codeInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Als er al een profiel is, ga direct door naar onboarding
+  // Als er al een profiel is, check avatar en ga naar home of onboarding
   useEffect(() => {
     if (currentProfile) {
-      navigate('/onboarding');
+      const hasAvatar = currentProfile.avatarCustomization && 
+                       typeof currentProfile.avatarCustomization === 'object' && 
+                       Object.keys(currentProfile.avatarCustomization).length > 0;
+      
+      if (hasAvatar) {
+        navigate('/home', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     }
   }, [currentProfile, navigate]);
 
