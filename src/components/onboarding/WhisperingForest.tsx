@@ -289,12 +289,14 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
             }}
           />
           
-          {/* Hover tooltip - "Klik voor meer info!" */}
+          {/* Hover tooltip - "Klik voor meer info!" - Links onder de kat */}
           {isCatHovered && !showCatMessage && (
             <div
               ref={catTooltipRef}
-              className="absolute left-[-320px] bottom-[calc(50%-60px)] z-50 px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
+              className="absolute z-[100] px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
               style={{
+                right: 'calc(30vh + 20px)', // Links van de kat (kat is rechts, 30vh breed)
+                bottom: '0', // Onder de kat
                 background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
                 border: `2px solid ${KPOP_COLORS.neonCyan}`,
                 boxShadow: `
@@ -322,7 +324,7 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
                 </p>
               </div>
               
-              {/* Arrow pointing to cat (right side) */}
+              {/* Arrow pointing right to cat */}
               <div
                 className="absolute right-[-12px] bottom-4 w-0 h-0"
                 style={{
