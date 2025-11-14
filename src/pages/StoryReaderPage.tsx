@@ -2740,10 +2740,18 @@ export default function StoryReaderPage() {
             // isLastSegment is already declared above (line 2537), reuse it
             
             // If there are choices, show choices + avatar
-            // BUT: only show choices if:
-            // 1. It's the last segment (can make new choices)
-            // 2. OR no choice has been made yet (first time reading)
-            if (hasChoices && (isLastSegment || !choiceAlreadyMade)) {
+            // For old stories with choices made: show all choices but disable non-selected ones
+            // For new stories: show all choices as normal
+            if (hasChoices) {
+              // Extract the choice label from choice_made to identify which one was selected
+              let selectedChoiceLabel: string | null = null;
+              if (choiceAlreadyMade) {
+                const match = choiceAlreadyMade.match(/^([A-D])\s*-/);
+                if (match) {
+                  selectedChoiceLabel = match[1];
+                }
+              }
+              
               return (
             <>
               <h3 
@@ -2757,7 +2765,7 @@ export default function StoryReaderPage() {
                   textShadow: `0 0 10px ${KPOP_COLORS.neonPurple}, 0 0 20px ${KPOP_COLORS.neonPurple}66`,
                 }}
               >
-                Wat doe je nu? 🤔
+                {choiceAlreadyMade ? 'Je keuze:' : 'Wat doe je nu? 🤔'}
               </h3>
               <div 
                 ref={choicesRef} 
@@ -2852,9 +2860,15 @@ export default function StoryReaderPage() {
                       }}
                       disabled={isLoading || currentSession.completed}
                       style={{
-                        background: isChoiceDisabled ? BOOK_COLORS.borderLight : choiceColor.bg,
-                        border: `3px solid ${isChoiceDisabled ? BOOK_COLORS.borderLight : choiceColor.border}`,
-                        boxShadow: `0 4px 12px ${BOOK_COLORS.shadowLight}`,
+                        background: isChoiceDisabledForOldStory 
+                          ? 'rgba(224, 224, 224, 0.3)' // Very light gray for old non-selected choices
+                          : (isChoiceDisabled ? BOOK_COLORS.borderLight : choiceColor.bg),
+                        border: `3px solid ${isChoiceDisabledForOldStory 
+                          ? 'rgba(200, 200, 200, 0.5)' // Light border for old non-selected
+                          : (isChoiceDisabled ? BOOK_COLORS.borderLight : choiceColor.border)}`,
+                        boxShadow: isChoiceDisabledForOldStory 
+                          ? 'none' // No shadow for old non-selected
+                          : `0 4px 12px ${BOOK_COLORS.shadowLight}`,
                         cursor: isChoiceDisabled ? 'not-allowed' : 'pointer',
                         minHeight: '60px',
                         padding: '10px',
@@ -2864,7 +2878,8 @@ export default function StoryReaderPage() {
                         textAlign: 'left',
                         transition: 'all 0.3s',
                         flexShrink: 0,
-                        opacity: isChoiceDisabled ? 0.6 : 1,
+                        opacity: isChoiceDisabledForOldStory ? 0.4 : (isChoiceDisabled ? 0.6 : 1),
+                        position: 'relative',
                       }}
                       onMouseEnter={(e) => {
                         if (!isChoiceDisabled) {
