@@ -105,6 +105,15 @@ const CAT_AGE_MESSAGES = [
 
 const ageSteps = [
   {
+    age: '4-6',
+    label: 'Sprookjesboek',
+    description: 'Vrolijk & Speels',
+    color: KPOP_COLORS.neonPink,
+    gradient: [KPOP_COLORS.neonPink, KPOP_COLORS.neonMagenta],
+    tagline: 'Eerste avonturen!',
+    icon: '/icon_heart-removebg-preview.png',
+  },
+  {
     age: '6-8',
     label: 'Avonturenboek',
     description: 'Dapper & Moedig',
@@ -602,23 +611,22 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
         Choose your age
       </p>
 
-      {/* Age selection cards - Alle 3 altijd zichtbaar - ook op mobiel - ALTIJD 3 kolommen op desktop */}
+      {/* Age selection cards - Alle 4 altijd zichtbaar - ook op mobiel - Responsive grid */}
       <div 
         className="relative z-20" 
         style={{ 
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))',
-          gap: '2rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '1.5rem',
           overflow: 'visible', 
           width: '100%',
-          maxWidth: '1400px',
+          maxWidth: '1600px',
           marginTop: 'calc(12vh - 20px)',
           marginBottom: '2vh',
-          padding: '0 2rem',
+          padding: '0 1rem',
           flexShrink: 0,
           justifyContent: 'center',
           alignItems: 'stretch',
-          minWidth: '800px',
           boxSizing: 'border-box',
           position: 'relative',
         }}

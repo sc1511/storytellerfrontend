@@ -407,6 +407,7 @@ export default function ParentDashboard() {
                     backgroundColor: '#ffffff',
                   }}
                 >
+                  <option value="4-6">4-6 jaar</option>
                   <option value="6-8">6-8 jaar</option>
                   <option value="8-10">8-10 jaar</option>
                   <option value="10-12">10-12 jaar</option>
