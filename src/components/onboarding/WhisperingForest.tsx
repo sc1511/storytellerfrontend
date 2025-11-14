@@ -289,55 +289,56 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
             }}
           />
           
-          {/* Hover tooltip - "Klik voor meer info!" - Links onder de kat */}
-          {isCatHovered && !showCatMessage && (
-            <div
-              ref={catTooltipRef}
-              className="absolute z-[100] px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
-              style={{
-                right: 'calc(30vh + 20px)', // Links van de kat (kat is rechts, 30vh breed)
-                bottom: '0', // Onder de kat
-                background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
-                border: `2px solid ${KPOP_COLORS.neonCyan}`,
-                boxShadow: `
-                  0 0 15px ${KPOP_COLORS.neonCyan}66,
-                  0 0 30px ${KPOP_COLORS.neonCyan}44,
-                  inset 0 0 15px ${KPOP_COLORS.neonCyan}22
-                `,
-                minWidth: '200px',
-                maxWidth: '300px',
-                whiteSpace: 'nowrap',
-                animation: 'fadeInTooltip 0.3s ease-out',
-              }}
-            >
-              <div className="text-center">
-                <p
-                  className="text-base md:text-lg font-bold"
-                  style={{
-                    color: KPOP_COLORS.neonCyan,
-                    fontFamily: "'Poppins', sans-serif",
-                    textShadow: `0 0 8px ${KPOP_COLORS.neonCyan}, 0 0 16px ${KPOP_COLORS.neonCyan}66`,
-                    lineHeight: '1.3',
-                  }}
-                >
-                  👆 Klik voor meer info!
-                </p>
-              </div>
-              
-              {/* Arrow pointing right to cat */}
-              <div
-                className="absolute right-[-12px] bottom-4 w-0 h-0"
-                style={{
-                  borderTop: '12px solid transparent',
-                  borderBottom: '12px solid transparent',
-                  borderLeft: `12px solid ${KPOP_COLORS.neonCyan}`,
-                  filter: `drop-shadow(2px 0 4px ${KPOP_COLORS.neonCyan}66)`,
-                }}
-              />
-            </div>
-          )}
         </button>
       </div>
+      
+      {/* Hover tooltip - "Klik voor meer info!" - Links onder de kat - Outside button for higher z-index */}
+      {isCatHovered && !showCatMessage && (
+        <div
+          ref={catTooltipRef}
+          className="absolute z-[200] px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
+          style={{
+            right: 'calc(30vh + 20px)', // Links van de kat (kat is rechts, 30vh breed)
+            bottom: 'calc(50% - 15vh)', // Onder de kat (kat is gecentreerd op 50%, hoogte is 30vh, dus bottom is 50% - 15vh)
+            background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
+            border: `2px solid ${KPOP_COLORS.neonCyan}`,
+            boxShadow: `
+              0 0 15px ${KPOP_COLORS.neonCyan}66,
+              0 0 30px ${KPOP_COLORS.neonCyan}44,
+              inset 0 0 15px ${KPOP_COLORS.neonCyan}22
+            `,
+            minWidth: '200px',
+            maxWidth: '300px',
+            whiteSpace: 'nowrap',
+            animation: 'fadeInTooltip 0.3s ease-out',
+          }}
+        >
+          <div className="text-center">
+            <p
+              className="text-base md:text-lg font-bold"
+              style={{
+                color: KPOP_COLORS.neonCyan,
+                fontFamily: "'Poppins', sans-serif",
+                textShadow: `0 0 8px ${KPOP_COLORS.neonCyan}, 0 0 16px ${KPOP_COLORS.neonCyan}66`,
+                lineHeight: '1.3',
+              }}
+            >
+              👆 Klik voor meer info!
+            </p>
+          </div>
+          
+          {/* Arrow pointing right to cat */}
+          <div
+            className="absolute right-[-12px] bottom-4 w-0 h-0"
+            style={{
+              borderTop: '12px solid transparent',
+              borderBottom: '12px solid transparent',
+              borderLeft: `12px solid ${KPOP_COLORS.neonCyan}`,
+              filter: `drop-shadow(2px 0 4px ${KPOP_COLORS.neonCyan}66)`,
+            }}
+          />
+        </div>
+      )}
       
       {/* Cat Message - Neon Bordje - Vierkant/rechthoekig vakje - Dicht bij de kat */}
       {showCatMessage && (
