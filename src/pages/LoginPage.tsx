@@ -29,18 +29,10 @@ export default function LoginPage() {
   const codeInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Als er al een profiel is, check avatar en ga naar home of onboarding
+  // Als er al een profiel is, ga altijd naar home (kind kan daar kiezen)
   useEffect(() => {
     if (currentProfile) {
-      const hasAvatar = currentProfile.avatarCustomization && 
-                       typeof currentProfile.avatarCustomization === 'object' && 
-                       Object.keys(currentProfile.avatarCustomization).length > 0;
-      
-      if (hasAvatar) {
-        navigate('/home', { replace: true });
-      } else {
-        navigate('/onboarding', { replace: true });
-      }
+      navigate('/home', { replace: true });
     }
   }, [currentProfile, navigate]);
 
@@ -104,27 +96,9 @@ export default function LoginPage() {
 
       addProfile(tempProfile);
       
-      // Check if avatar exists - if yes, go to home, otherwise onboarding
-      // avatarCustomization can be an object, null, or undefined
-      const hasAvatar = tempProfile.avatarCustomization && 
-                       typeof tempProfile.avatarCustomization === 'object' && 
-                       Object.keys(tempProfile.avatarCustomization).length > 0;
-      
-      console.log('🔍 Avatar check:', {
-        avatarCustomization: tempProfile.avatarCustomization,
-        hasAvatar,
-        type: typeof tempProfile.avatarCustomization,
-        isObject: typeof tempProfile.avatarCustomization === 'object',
-        keys: tempProfile.avatarCustomization ? Object.keys(tempProfile.avatarCustomization) : []
-      });
-      
-      if (hasAvatar) {
-        console.log('✅ Avatar exists, navigating to /home');
-        navigate('/home', { replace: true });
-      } else {
-        console.log('⚠️ No avatar, navigating to /onboarding');
-        navigate('/onboarding', { replace: true });
-      }
+      // Always go to home after login - child can choose to play (onboarding) or read stories (library)
+      console.log('✅ Login successful, navigating to /home');
+      navigate('/home', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Code of naam klopt niet. Vraag je ouder om hulp!');
       console.error('Login error:', err);
