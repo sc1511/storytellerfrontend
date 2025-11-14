@@ -669,14 +669,43 @@ export default function ParentDashboard() {
                       })
                       .slice(0, 10);
                     
-                    return words.length > 0 ? (
+                    // Also get definitions if available
+                    const vocabWithDefinitions = reportData.vocabulary.uniqueAdvancedVocab
+                      .filter((w: any) => {
+                        if (typeof w === 'string') return true;
+                        if (w && typeof w === 'object' && 'word' in w) {
+                          const word = w.word?.toLowerCase().trim() || '';
+                          return word.length > 0 && !placeholderWords.includes(word);
+                        }
+                        return false;
+                      })
+                      .slice(0, 10);
+                    
+                    return vocabWithDefinitions.length > 0 ? (
                       <div className="mt-4 bg-white border-2 border-blue-200 p-4 rounded-lg">
                         <div className="font-bold mb-2" style={{ color: '#667eea' }}>
-                          Nieuwe moeilijke woorden ({words.length})
+                          Nieuwe moeilijke woorden ({vocabWithDefinitions.length})
                         </div>
-                        <div className="text-sm" style={{ color: '#333333' }}>
-                          {words.join(', ')}
-                          {reportData.vocabulary.uniqueAdvancedVocab.length > 10 && '...'}
+                        <div className="space-y-2">
+                          {vocabWithDefinitions.map((item: any, idx: number) => {
+                            if (typeof item === 'string') {
+                              return (
+                                <div key={idx} className="text-sm" style={{ color: '#333333' }}>
+                                  <strong>{item}</strong>
+                                </div>
+                              );
+                            } else if (item && typeof item === 'object' && 'word' in item) {
+                              return (
+                                <div key={idx} className="text-sm" style={{ color: '#333333' }}>
+                                  <strong>{item.word}</strong>
+                                  {item.definition && (
+                                    <span className="text-gray-600 ml-2">- {item.definition}</span>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
                         </div>
                       </div>
                     ) : null;
@@ -705,7 +734,15 @@ export default function ParentDashboard() {
                         <div className="text-gray-600 text-sm mt-1">Karakter ontwikkeling</div>
                       </div>
                     )}
-                    {reportData.creativity.uniqueEducationalThemes.length > 0 && (
+                    {reportData.creativity.avgSensoryLanguage && (
+                      <div className="bg-white border-2 border-orange-200 p-4 rounded-lg">
+                        <div className="text-2xl font-bold" style={{ color: '#ff9800' }}>
+                          {reportData.creativity.avgSensoryLanguage}%
+                        </div>
+                        <div className="text-gray-600 text-sm mt-1">Zintuiglijke taal</div>
+                      </div>
+                    )}
+                    {reportData.creativity.uniqueEducationalThemes && reportData.creativity.uniqueEducationalThemes.length > 0 && (
                       <div className="bg-white border-2 border-green-200 p-4 rounded-lg">
                         <div className="text-2xl font-bold" style={{ color: '#4caf50' }}>
                           {reportData.creativity.uniqueEducationalThemes.length}
@@ -714,7 +751,31 @@ export default function ParentDashboard() {
                       </div>
                     )}
                   </div>
-                  {reportData.creativity.uniqueEducationalThemes.length > 0 && (
+                  {reportData.creativity.plotComplexityDistribution && (
+                    <div className="mt-4 bg-white border-2 border-indigo-200 p-4 rounded-lg">
+                      <div className="font-bold mb-2" style={{ color: '#667eea' }}>
+                        Plot Complexiteit
+                      </div>
+                      <div className="text-gray-600 text-sm space-y-1">
+                        {Object.entries(reportData.creativity.plotComplexityDistribution).map(([complexity, count]: [string, any]) => (
+                          <div key={complexity}>
+                            <strong>{complexity}</strong>: {count} {count === 1 ? 'verhaal' : 'verhalen'}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {reportData.creativity.imaginativeElements && reportData.creativity.imaginativeElements.length > 0 && (
+                    <div className="mt-4 bg-white border-2 border-pink-200 p-4 rounded-lg">
+                      <div className="font-bold mb-2" style={{ color: '#e91e63' }}>
+                        Creatieve Elementen ({reportData.creativity.imaginativeElements.length})
+                      </div>
+                      <div className="text-gray-600 text-sm">
+                        {reportData.creativity.imaginativeElements.join(', ')}
+                      </div>
+                    </div>
+                  )}
+                  {reportData.creativity.uniqueEducationalThemes && reportData.creativity.uniqueEducationalThemes.length > 0 && (
                     <div className="mt-4 bg-white border-2 border-green-200 p-4 rounded-lg">
                       <div className="font-bold mb-2" style={{ color: '#4caf50' }}>
                         Thema's ({reportData.creativity.uniqueEducationalThemes.length})
