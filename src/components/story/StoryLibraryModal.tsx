@@ -27,6 +27,8 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
   const currentProfile = useProfileStore((state) => state.currentProfile);
   const [sessions, setSessions] = useState<StorySession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigatingToSessionId, setNavigatingToSessionId] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -142,10 +144,22 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
   }, [isOpen]);
 
   const handleStoryClick = (sessionId: string) => {
+    // Show loading overlay immediately
+    setIsNavigating(true);
+    setNavigatingToSessionId(sessionId);
+    
+    // Close modal first
     onClose();
+    
+    // Small delay before navigation to show loading
     setTimeout(() => {
-      // Always go to story reader page when clicking on a story
+      // Navigate to story reader page
       navigate(`/story/${sessionId}`);
+      // Loading will be handled by StoryReaderPage, but keep it visible for a moment
+      setTimeout(() => {
+        setIsNavigating(false);
+        setNavigatingToSessionId(null);
+      }, 500);
     }, 300);
   };
 
@@ -158,9 +172,51 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     });
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !isNavigating) return null;
 
   return (
+    <>
+      {/* Loading Overlay with Video - Shows when navigating to a story */}
+      {isNavigating && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          {/* Background Video */}
+          <video
+            src="/kidsreadingtablet.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            style={{ zIndex: 1 }}
+          />
+          
+          {/* Loading Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center gap-6">
+            {/* Spinner */}
+            <div
+              className="w-24 h-24 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"
+              role="status"
+              aria-label="Loading"
+            >
+              <span className="sr-only">Loading...</span>
+            </div>
+            
+            {/* Text */}
+            <p 
+              className="text-2xl font-bold text-white"
+              style={{
+                fontFamily: "'Comfortaa', sans-serif",
+                textShadow: '0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(176, 38, 255, 0.5)',
+                letterSpacing: '0.05em',
+              }}
+            >
+              Je verhaal wordt geladen...
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal */}
     <div
       ref={overlayRef}
       className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
