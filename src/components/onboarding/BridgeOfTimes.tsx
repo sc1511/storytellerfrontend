@@ -177,48 +177,28 @@ export function BridgeOfTimes({ onAgeSelect, onBack }: TheFloatingStaircaseProps
       const validCards = cards.filter(card => card !== null) as HTMLDivElement[];
       
       const tl = gsap.timeline({
-        onComplete: () => {
-          // Start floating animations after initial animation
-          validCards.forEach((card, i) => {
-            if (card && !(card as any).floatAnimation) {
-              gsap.set(card, { y: 0, clearProps: 'transform' });
-              
-              const floatAnimation = gsap.to(card, {
-                y: -8,
-                duration: 2.5 + i * 0.2,
-                repeat: -1,
-                yoyo: true,
-                ease: 'sine.inOut',
-                paused: false
-              });
-              
-              (card as any).floatAnimation = floatAnimation;
-            }
-          });
-        }
+        // Disable floating animations for better performance
       });
       
-      // Ensure all cards are visible before animation
+      // Ensure all cards are visible immediately
       validCards.forEach(card => {
         gsap.set(card, { 
           opacity: 1, 
           visibility: 'visible',
           display: 'block',
-          y: 150,
-          scale: 0.8
+          y: 0,
+          scale: 1
         });
       });
       
-      tl.fromTo(containerRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5 })
+      // Minimal animation - just fade in quickly
+      tl.fromTo(containerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 })
         .to(validCards, {
-          y: 0,
           opacity: 1,
-          scale: 1,
-          stagger: 0.15,
-          duration: 1.2,
-          ease: 'back.out(1.4)',
-          clearProps: 'none' // Don't clear any props
-        }, '-=1');
+          stagger: 0.05,
+          duration: 0.2,
+          ease: 'power2.out',
+        }, '-=0.2');
     };
     
     return () => {

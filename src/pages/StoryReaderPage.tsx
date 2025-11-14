@@ -1392,7 +1392,7 @@ export default function StoryReaderPage() {
               ref={textRef} 
               id="story-text-container"
               className="story-text-container"
-              style={{
+          style={{
                 flex: '1 1 auto',
                 overflow: 'hidden',
                 overflowY: 'hidden',
@@ -1651,9 +1651,9 @@ export default function StoryReaderPage() {
                     </div>
                   )}
                 </div>
-                  );
-                  })()}
-                </div>
+              );
+            })()}
+          </div>
               );
             })()}
           </div>

@@ -50,7 +50,7 @@ const RollingKoreanBackground = () => {
           gsap.set(clone, { x: -contentWidth })
           gsap.to([content, clone], {
             x: `+=${contentWidth}`,
-            duration: 30,
+            duration: 15, // Faster marquee
             ease: 'none',
             repeat: -1,
           })

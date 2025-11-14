@@ -73,10 +73,10 @@ function AvatarRevealVideo({
     const container = containerRef.current
     const avatarId = detectAvatarId(customization)
 
-    // Animate scale up when media starts - Kleiner
+    // Animate scale up when media starts - Minimal
     gsap.to(container, {
-      scale: 1.1, // Grow to 110%
-      duration: 1.5,
+      scale: 1.05, // Grow to 105%
+      duration: 0.3,
       ease: 'power2.out',
     })
 
@@ -95,10 +95,10 @@ function AvatarRevealVideo({
             if (nextMedia) {
               setCurrentVideoIndex(nextIndex)
               setMediaSrc(nextMedia)
-              // Scale back up for next media - Kleiner
+              // Scale back up for next media - Minimal
               gsap.to(container, {
-                scale: 1.1,
-                duration: 1.5,
+                scale: 1.05,
+                duration: 0.3,
                 ease: 'power2.out',
               })
             } else {
@@ -106,10 +106,10 @@ function AvatarRevealVideo({
               onComplete()
             }
           } else {
-            // All media played, scale up one last time then complete - Kleiner
+            // All media played, scale up one last time then complete - Minimal
             gsap.to(container, {
-              scale: 1.15,
-              duration: 0.8,
+              scale: 1.1,
+              duration: 0.3,
               ease: 'power2.out',
               onComplete: () => {
                 onComplete()
@@ -135,8 +135,8 @@ function AvatarRevealVideo({
 
       const handlePlaying = () => {
         gsap.to(container, {
-          scale: 1.1,
-          duration: 1.5,
+          scale: 1.05,
+          duration: 0.3,
           ease: 'power2.out',
         })
       }
@@ -234,7 +234,7 @@ const RollingKoreanBackground = () => {
           gsap.set(clone, { x: -contentWidth })
           gsap.to([content, clone], {
             x: `+=${contentWidth}`,
-            duration: 30,
+            duration: 15, // Faster marquee
             ease: 'none',
             repeat: -1,
           })
@@ -445,22 +445,22 @@ export function MirrorOfSelfExpression({
   useEffect(() => {
     if (step === 'select') {
       const tl = gsap.timeline()
-      tl.fromTo(containerRef.current, { opacity: 0 }, { opacity: 1, duration: 1.5 })
+      tl.fromTo(containerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3 })
         .fromTo('.floating-circle', { scale: 0, opacity: 0 }, {
           scale: 1,
           opacity: 1,
-          duration: 1.5,
-          stagger: 0.05,
-          ease: 'elastic.out(1, 0.6)'
-        }, '-=1')
-        .fromTo(avatarRefs.current, { y: 100, opacity: 0, scale: 0.8 }, {
+          duration: 0.3,
+          stagger: 0.02,
+          ease: 'power2.out'
+        }, '-=0.2')
+        .fromTo(avatarRefs.current, { y: 50, opacity: 0, scale: 0.9 }, {
           y: 0,
           opacity: 1,
           scale: 1,
-          stagger: 0.1,
-          duration: 1.2,
-          ease: 'back.out(1.4)'
-        }, '-=1')
+          stagger: 0.05,
+          duration: 0.3,
+          ease: 'power2.out'
+        }, '-=0.2')
 
       // Continuous animations
       gsap.utils.toArray('.floating-circle').forEach((circle: any, i) => {
