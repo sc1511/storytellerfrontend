@@ -886,26 +886,19 @@ export default function ParentDashboard() {
                       const getIncorrectAnswersForSegment = (segmentSeq: number, testResult: any) => {
                         if (!reportData.incorrectAnswers || !reportData.incorrectAnswers.length) return [];
                         
-                        // First try to match by session_id and segment_sequence
+                        // Match by session_id and segment_sequence
                         const matched = reportData.incorrectAnswers.filter((item: any) => {
-                          // Match by session_id
-                          const sessionMatch = item.session_id === sessionId || 
-                                             item.sessionId === sessionId ||
-                                             (!item.session_id && !item.sessionId); // If no session_id, might be from this story
+                          // Match session_id (must match this story's session)
+                          const sessionMatch = (item.session_id === sessionId || item.sessionId === sessionId);
                           
-                          // Match by segment_sequence
-                          const segmentMatch = item.segmentSequence === segmentSeq || 
-                                             item.segment_sequence === segmentSeq ||
-                                             item.segment_sequence === testResult?.segmentSequence ||
-                                             item.segmentSequence === testResult?.segment_sequence;
+                          // Match segment_sequence (must match this segment)
+                          const segmentMatch = (item.segment_sequence === segmentSeq || 
+                                               item.segmentSequence === segmentSeq ||
+                                               item.segment_sequence === testResult?.segment_sequence ||
+                                               item.segmentSequence === testResult?.segmentSequence);
                           
-                          // Also try to match by test result ID if available
-                          const testMatch = testResult?.id && (
-                            item.test_id === testResult.id ||
-                            item.testId === testResult.id
-                          );
-                          
-                          return sessionMatch && (segmentMatch || testMatch || (!item.segmentSequence && !item.segment_sequence));
+                          // Both must match
+                          return sessionMatch && segmentMatch;
                         });
                         
                         return matched;
