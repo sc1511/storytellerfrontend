@@ -237,9 +237,12 @@ const RollingKoreanBackground = () => {
           gsap.set(clone, { x: -contentWidth })
           gsap.to([content, clone], {
             x: `+=${contentWidth}`,
-            duration: 15, // Faster marquee
+            duration: 15,
             ease: 'none',
-            repeat: -1,
+            repeat: 0, // Run once and stop
+            onComplete: () => {
+              // Animation complete, elements stay in place
+            }
           })
         }, 100)
       }
@@ -465,32 +468,8 @@ export function MirrorOfSelfExpression({
           ease: 'power2.out'
         }, '-=0.2')
 
-      // Continuous animations - Reduced for better performance
-      gsap.utils.toArray('.floating-circle').forEach((circle: any, i) => {
-        gsap.to(circle, {
-          y: `random(-40, 40)`, // Reduced movement
-          x: `random(-40, 40)`, // Reduced movement
-          scale: `random(0.8, 1.2)`, // Reduced scale variation
-          duration: `random(6, 10)`, // Slower = less CPU
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: i * 0.3 // More spacing
-        })
-      })
-
-      // Gentle floating for avatars - Reduced
-      avatarRefs.current.forEach((avatar, i) => {
-        if (avatar) {
-          gsap.to(avatar, {
-            y: -5, // Reduced movement
-            duration: 3 + i * 0.3, // Slower = less CPU
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
-          })
-        }
-      })
+      // No continuous animations - only animate on interaction
+      // Floating circles and avatars stay still for better performance
     }
   }, [step])
 
@@ -526,6 +505,34 @@ export function MirrorOfSelfExpression({
     const index = availableAvatars.findIndex(a => a.id === avatarId)
 
     if (index !== -1 && avatarRefs.current[index]) {
+      // Animate floating circles on click
+      const floatingCircles = document.querySelectorAll('.floating-circle');
+      floatingCircles.forEach((circle: any, i) => {
+        if (circle) {
+          const randomY = gsap.utils.random(-30, 30);
+          const randomX = gsap.utils.random(-30, 30);
+          const randomScale = gsap.utils.random(0.9, 1.1);
+          gsap.to(circle, {
+            y: randomY,
+            x: randomX,
+            scale: randomScale,
+            duration: 0.5,
+            ease: 'power2.out',
+            delay: i * 0.05,
+            onComplete: () => {
+              // Return to original position
+              gsap.to(circle, {
+                y: 0,
+                x: 0,
+                scale: 1,
+                duration: 0.3,
+                ease: 'power2.in'
+              });
+            }
+          });
+        }
+      });
+
       // Animate selected avatar
       gsap.to(avatarRefs.current[index], {
         scale: 1.15,
@@ -624,8 +631,8 @@ export function MirrorOfSelfExpression({
           })}
         </div>
 
-        {/* Magical starburst particles - More dynamic */}
-        {[...Array(80)].map((_, i) => (
+        {/* Magical starburst particles - Static for better performance */}
+        {[...Array(40)].map((_, i) => (
           <div
             key={i}
             className="absolute pointer-events-none particle"
@@ -650,38 +657,38 @@ export function MirrorOfSelfExpression({
                 KPOP_COLORS.neonPurple,
                 KPOP_COLORS.neonCyan,
               ][Math.floor(Math.random() * 4)]}`,
-              animation: `float-particle ${3 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
+              // No animation - static for better performance
             }}
           />
         ))}
 
-        {/* Multiple glowing orbs with different colors */}
+        {/* Multiple glowing orbs - Static for better performance */}
         <div className="absolute top-1/4 left-1/4 w-48 h-48 rounded-full opacity-40"
           style={{
             background: `radial-gradient(circle, ${KPOP_COLORS.neonBlue} 0%, transparent 70%)`,
             filter: 'blur(40px)',
-            animation: 'pulse-orb-intense 2.5s ease-in-out infinite',
+            // No animation - static for better performance
           }}
         />
         <div className="absolute top-1/3 right-1/4 w-56 h-56 rounded-full opacity-35"
           style={{
             background: `radial-gradient(circle, ${KPOP_COLORS.deepPurple} 0%, transparent 70%)`,
             filter: 'blur(45px)',
-            animation: 'pulse-orb-intense 3s ease-in-out infinite 0.5s',
+            // No animation - static for better performance
           }}
         />
         <div className="absolute bottom-1/4 left-1/3 w-40 h-40 rounded-full opacity-30"
           style={{
             background: `radial-gradient(circle, ${KPOP_COLORS.coolMint} 0%, transparent 70%)`,
             filter: 'blur(35px)',
-            animation: 'pulse-orb-intense 3.5s ease-in-out infinite 1s',
+            // No animation - static for better performance
           }}
         />
         <div className="absolute bottom-1/3 right-1/3 w-52 h-52 rounded-full opacity-38"
           style={{
             background: `radial-gradient(circle, ${KPOP_COLORS.pastelPink} 0%, transparent 70%)`,
             filter: 'blur(38px)',
-            animation: 'pulse-orb-intense 2.8s ease-in-out infinite 1.5s',
+            // No animation - static for better performance
           }}
         />
 
@@ -757,7 +764,7 @@ export function MirrorOfSelfExpression({
                     inset 0 3px 6px rgba(255, 255, 255, 0.9)
                   `,
                   background: `linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, ${KPOP_COLORS.ivory} 100%)`,
-                  animation: 'avatar-float 4s ease-in-out infinite',
+                  // No animation - static for better performance
                   padding: selectedAvatar?.id === 'stitch' ? '10%' : '0',
                 }}
               >
@@ -805,13 +812,13 @@ export function MirrorOfSelfExpression({
                 />
               </div>
 
-              {/* Neon geometric elements around avatar - Replacing rotating icons */}
+              {/* Neon geometric elements around avatar - Static for better performance */}
               {[...Array(16)].map((_, i) => {
                 const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
                 const color = colors[i % colors.length];
                 const distance = 200 + (i % 4) * 30;
                 const size = 20 + (i % 3) * 15;
-                const shapeType = i % 3; // 0 = circle, 1 = square, 2 = diamond
+                const shapeType = i % 3;
                 
                 return (
                   <div
@@ -823,7 +830,6 @@ export function MirrorOfSelfExpression({
                       width: `${size}px`,
                       height: `${size}px`,
                       transform: `translate(-50%, -50%) rotate(${i * 22.5}deg) translateY(-${distance}px)`,
-                      animation: `neon-rotate-magical 5s ease-in-out infinite ${i * 0.2}s`,
                       zIndex: 5,
                     }}
                   >
@@ -841,7 +847,6 @@ export function MirrorOfSelfExpression({
                           inset 0 0 15px ${color}22
                         `,
                         transform: shapeType === 2 ? 'rotate(45deg)' : 'none',
-                        animation: 'neon-pulse-intense 2s ease-in-out infinite',
                         opacity: 0.8,
                       }}
                     />
@@ -849,7 +854,7 @@ export function MirrorOfSelfExpression({
                 )
               })}
               
-              {/* Additional floating neon lines */}
+              {/* Additional neon lines - Static for better performance */}
               {[...Array(8)].map((_, i) => {
                 const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
                 const color = colors[i % colors.length];
@@ -867,7 +872,6 @@ export function MirrorOfSelfExpression({
                       height: '3px',
                       background: `linear-gradient(90deg, transparent, ${color}88, ${color}, ${color}88, transparent)`,
                       transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-${distance}px)`,
-                      animation: `neon-line-pulse 3s ease-in-out infinite ${i * 0.3}s`,
                       zIndex: 4,
                       boxShadow: `0 0 15px ${color}66`,
                       opacity: 0.7,
@@ -1029,39 +1033,7 @@ export function MirrorOfSelfExpression({
             />
           </button>
         )}
-        {/* Static Korean letters background - like StoryGeneratorPage */}
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-          {[...Array(30)].map((_, i) => {
-            const koreanWords = ['이야기', '상상', '모험', '마법', '별', '우주', '꿈', '환상', '신비', '기적'];
-            const word = koreanWords[i % koreanWords.length];
-            const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
-            const color = colors[i % colors.length];
-            return (
-              <div
-                key={`korean-${i}`}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${20 + Math.random() * 40}px`,
-                  fontFamily: "'Noto Sans KR', sans-serif",
-                  fontWeight: 900,
-                  color: color,
-                  opacity: 0.15 + Math.random() * 0.1,
-                  textShadow: `
-                    0 0 10px ${color}66,
-                    0 0 20px ${color}44,
-                    0 0 30px ${color}22
-                  `,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  pointerEvents: 'none',
-                }}
-              >
-                {word}
-              </div>
-            );
-          })}
-        </div>
+        {/* Static Korean letters removed for better performance */}
 
         {/* Rolling Korean Background - Alleen onderste horizontale scrolling */}
         <RollingKoreanBackground />
@@ -1086,7 +1058,7 @@ export function MirrorOfSelfExpression({
             />
           ))}
           
-          {/* Geometric shapes */}
+          {/* Geometric shapes - Static for better performance */}
           {[...Array(15)].map((_, i) => {
             const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
             const color = colors[i % colors.length];
@@ -1109,21 +1081,21 @@ export function MirrorOfSelfExpression({
                   `,
                   opacity: 0.15 + Math.random() * 0.25,
                   transform: `rotate(${Math.random() * 360}deg)`,
-                  animation: `float ${3 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`,
+                  // No animation - static for better performance
                 }}
               />
             );
           })}
         </div>
 
-        {/* Background particles / Stars - Reageren op hover */}
+        {/* Background particles / Stars - Static for better performance */}
         <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-          {[...Array(60)].map((_, i) => {
+          {[...Array(30)].map((_, i) => {
             const starColor = ['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF', '#FFD700'][i % 5];
             return (
               <div
                 key={`star-${i}`}
-                className={`absolute rounded-full star-particle ${hoveredLanguage !== null ? 'star-hover' : ''}`}
+                className="absolute rounded-full star-particle"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
@@ -1131,8 +1103,7 @@ export function MirrorOfSelfExpression({
                   height: `${1 + Math.random() * 5}px`,
                   background: starColor,
                   boxShadow: `0 0 ${3 + Math.random() * 8}px ${starColor}`,
-                  animation: `neon-flicker ${2 + Math.random() * 5}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 4}s`,
+                  // No animation - static for better performance
                 }}
               />
             );
@@ -1362,33 +1333,63 @@ export function MirrorOfSelfExpression({
         </button>
       )}
       {/* Minimal background - zwarte achtergrond met alleen subtiele elementen */}
-      {/* Neon Hearts Background - Lucide React hearts met neon glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+      {/* Neon Hearts Background - Only show on hover for better performance */}
+      <div 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ zIndex: 1 }}
+        onMouseEnter={(e) => {
+          // Show hearts on hover
+          const hearts = e.currentTarget.querySelectorAll('[data-heart]');
+          hearts.forEach((heart: any) => {
+            if (heart) {
+              gsap.to(heart, {
+                opacity: 0.6,
+                scale: 1.1,
+                duration: 0.3,
+                ease: 'power2.out'
+              });
+            }
+          });
+        }}
+        onMouseLeave={(e) => {
+          // Hide hearts when not hovering
+          const hearts = e.currentTarget.querySelectorAll('[data-heart]');
+          hearts.forEach((heart: any) => {
+            if (heart) {
+              gsap.to(heart, {
+                opacity: 0,
+                scale: 1,
+                duration: 0.3,
+                ease: 'power2.in'
+              });
+            }
+          });
+        }}
+      >
         {[...Array(8)].map((_, i) => {
           const heartColors = [
-            { stroke: '#FF10F0', glow: '#FF10F0' }, // Pink
-            { stroke: '#00F0FF', glow: '#00F0FF' }, // Cyan
-            { stroke: '#B026FF', glow: '#B026FF' }, // Purple
-            { stroke: '#00FFFF', glow: '#00FFFF' }, // Cyan blue
-            { stroke: '#FFD700', glow: '#FFD700' }, // Yellow
+            { stroke: '#FF10F0', glow: '#FF10F0' },
+            { stroke: '#00F0FF', glow: '#00F0FF' },
+            { stroke: '#B026FF', glow: '#B026FF' },
+            { stroke: '#00FFFF', glow: '#00FFFF' },
+            { stroke: '#FFD700', glow: '#FFD700' },
           ];
           const color = heartColors[i % heartColors.length];
-          const size = 40 + Math.random() * 60; // Variabele grootte
+          const size = 40 + Math.random() * 60;
           const rotation = Math.random() * 360;
           
           return (
             <div
               key={`heart-${i}`}
+              data-heart
               className="absolute"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
                 width: `${size}px`,
                 height: `${size}px`,
-                opacity: 0.3 + Math.random() * 0.3,
+                opacity: 0, // Hidden by default
                 transform: `rotate(${rotation}deg)`,
-                animation: `float ${4 + Math.random() * 4}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
               }}
             >
               <Heart
@@ -1410,7 +1411,7 @@ export function MirrorOfSelfExpression({
         })}
       </div>
       
-      {/* Noodles icons in background - scattered */}
+      {/* Noodles icons in background - static for better performance */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
         {[...Array(4)].map((_, i) => {
           const size = 80 + Math.random() * 120;
@@ -1425,8 +1426,7 @@ export function MirrorOfSelfExpression({
                 height: `${size}px`,
                 opacity: 0.15 + Math.random() * 0.15,
                 transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `float ${5 + Math.random() * 5}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
+                // No animation - static for better performance
               }}
             >
               <img
@@ -1445,12 +1445,12 @@ export function MirrorOfSelfExpression({
         })}
       </div>
 
-      {/* Subtle background particles - veel minder voor rustige achtergrond */}
+      {/* Subtle background particles - floating circles, only animate on click */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
         {[...Array(15)].map((_, i) => (
           <div
             key={`star-${i}`}
-            className="absolute rounded-full"
+            className="absolute rounded-full floating-circle"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -1459,8 +1459,7 @@ export function MirrorOfSelfExpression({
               background: ['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF'][i % 4],
               boxShadow: `0 0 ${2 + Math.random() * 3}px ${['#FF10F0', '#00F0FF', '#B026FF', '#00FFFF'][i % 4]}`,
               opacity: 0.2 + Math.random() * 0.2,
-              animation: `neon-flicker ${4 + Math.random() * 4}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 6}s`,
+              // No animation - only animate on click for better performance
             }}
           />
         ))}

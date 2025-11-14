@@ -50,9 +50,12 @@ const RollingKoreanBackground = () => {
           gsap.set(clone, { x: -contentWidth })
           gsap.to([content, clone], {
             x: `+=${contentWidth}`,
-            duration: 15, // Faster marquee
+            duration: 15,
             ease: 'none',
-            repeat: -1,
+            repeat: 0, // Run once and stop
+            onComplete: () => {
+              // Animation complete, elements stay in place
+            }
           })
         }, 100)
       }
@@ -266,40 +269,6 @@ export function WhisperingForest({ onNameSubmit, onBack, initialName = '' }: The
         opacity: 1,
       }}
     >
-      {/* Static Korean letters background - like StoryGeneratorPage */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
-        {[...Array(30)].map((_, i) => {
-          const koreanWords = ['이야기', '상상', '모험', '마법', '별', '우주', '꿈', '환상', '신비', '기적'];
-          const word = koreanWords[i % koreanWords.length];
-          const colors = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan];
-          const color = colors[i % colors.length];
-          return (
-            <div
-              key={`korean-${i}`}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                fontSize: `${20 + Math.random() * 40}px`,
-                fontFamily: "'Noto Sans KR', sans-serif",
-                fontWeight: 900,
-                color: color,
-                opacity: 0.15 + Math.random() * 0.1,
-                textShadow: `
-                  0 0 10px ${color}66,
-                  0 0 20px ${color}44,
-                  0 0 30px ${color}22
-                `,
-                transform: `rotate(${Math.random() * 360}deg)`,
-                pointerEvents: 'none',
-              }}
-            >
-              {word}
-            </div>
-          );
-        })}
-      </div>
-
       {/* Rolling Korean Background - Alleen onderste horizontale scrolling */}
       <RollingKoreanBackground />
 
