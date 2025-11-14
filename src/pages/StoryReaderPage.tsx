@@ -3255,6 +3255,55 @@ export default function StoryReaderPage() {
                     </div>
                   );
                 } else {
+                  // Check if story is marked as completed but test is not done
+                  const storyMarkedCompleted = currentSession.completed;
+                  if (storyMarkedCompleted && !isTestCompleted && hasTestQuestions) {
+                    // Story is marked completed but test is missing - encourage to complete
+                    return (
+                      <div className="mb-6">
+                        <p
+                          className="text-base mb-4 font-bold"
+                          style={{
+                            color: '#ff9800',
+                            fontFamily: "'Comfortaa', sans-serif",
+                            fontWeight: 700,
+                          }}
+                        >
+                          ⚠️ Je verhaal staat als voltooid, maar je laatste test ontbreekt nog!
+                        </p>
+                        <p
+                          className="text-sm mb-4"
+                          style={{
+                            color: BOOK_COLORS.textMedium,
+                            fontFamily: "'Comfortaa', sans-serif",
+                          }}
+                        >
+                          Dien je laatste test in om je verhaal volledig te voltooien! 😊
+                        </p>
+                        <button
+                          onClick={() => {
+                            setShowStoryCompletedModal(false);
+                            // Go to last segment and show test
+                            setCurrentSegmentIndex(lastSegmentIndex);
+                            setShowComprehensionTest(true);
+                          }}
+                          className="w-full px-6 py-3 rounded-2xl font-bold text-lg transition-all hover:scale-105 active:scale-95 mb-3"
+                          style={{
+                            background: BOOK_COLORS.accentOrange,
+                            border: `3px solid ${BOOK_COLORS.accentOrange}`,
+                            color: BOOK_COLORS.warmWhite,
+                            fontFamily: "'Comfortaa', sans-serif",
+                            fontWeight: 700,
+                            boxShadow: `0 4px 16px ${BOOK_COLORS.accentOrange}66`,
+                            minWidth: 'auto',
+                            minHeight: 'auto',
+                          }}
+                        >
+                          🎯 Dien je Test In Nu!
+                        </button>
+                      </div>
+                    );
+                  }
                   return (
                     <p
                       className="text-base mb-6"

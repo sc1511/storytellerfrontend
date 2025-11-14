@@ -960,6 +960,14 @@ export default function ParentDashboard() {
                                   }}>
                                     📖 {story.segmentCount} {story.segmentCount === 1 ? 'seg' : 'segs'}
                                   </span>
+                                  {(story.metadata?.age || story.age) && (
+                                    <span className="text-xs" style={{ 
+                                      color: '#666666',
+                                      fontFamily: "'Poppins', sans-serif",
+                                    }}>
+                                      👶 {story.metadata?.age || story.age} jaar
+                                    </span>
+                                  )}
                                   {avgScore !== null && (
                                     <span 
                                       className="text-xs px-2 py-0.5 rounded"
