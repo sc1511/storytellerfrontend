@@ -81,47 +81,7 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
       }
     }
     
-    // Vertical marquee 1 (top to bottom)
-    if (verticalMarqueeRef1.current) {
-      const content = verticalMarqueeRef1.current.querySelector('.marquee-content-vertical') as HTMLElement
-      if (content) {
-        setTimeout(() => {
-          const clone = content.cloneNode(true) as HTMLElement
-          clone.className = 'marquee-content-vertical flex flex-col whitespace-nowrap'
-          verticalMarqueeRef1.current?.appendChild(clone)
-
-          const contentHeight = content.offsetHeight
-          gsap.set(clone, { y: -contentHeight })
-          gsap.to([content, clone], {
-            y: `+=${contentHeight}`,
-            duration: 20,
-            ease: 'none',
-            repeat: -1,
-          })
-        }, 100)
-      }
-    }
-    
-    // Vertical marquee 2 (bottom to top)
-    if (verticalMarqueeRef2.current) {
-      const content = verticalMarqueeRef2.current.querySelector('.marquee-content-vertical') as HTMLElement
-      if (content) {
-        setTimeout(() => {
-          const clone = content.cloneNode(true) as HTMLElement
-          clone.className = 'marquee-content-vertical flex flex-col whitespace-nowrap'
-          verticalMarqueeRef2.current?.appendChild(clone)
-
-          const contentHeight = content.offsetHeight
-          gsap.set(clone, { y: contentHeight })
-          gsap.to([content, clone], {
-            y: `-=${contentHeight}`,
-            duration: 25,
-            ease: 'none',
-            repeat: -1,
-          })
-        }, 100)
-      }
-    }
+    // Vertical marquees removed for better performance
   }, [])
 
   // Zachtjes fade-in animatie voor start button
@@ -561,73 +521,7 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
         </div>
       </div>
       
-      {/* Vertical marquee 1 - left side, top to bottom */}
-      <div
-        ref={verticalMarqueeRef1}
-        className="absolute left-0 top-0 bottom-0 w-[10vw] overflow-hidden pointer-events-none"
-        style={{ zIndex: 55, opacity: 0.4, position: 'fixed' }}
-      >
-        <div className="marquee-content-vertical flex flex-col whitespace-nowrap items-center justify-center h-full">
-          {[...Array(8)].map((_, i) => {
-            const koreanWords = ['환영', '이름', '마법', '별', '우주', '나', '사랑', '희망'];
-            const color = i % 2 === 0 ? KPOP_COLORS.neonBlue : KPOP_COLORS.neonPurple;
-            return (
-              <span
-                key={i}
-                lang="ko"
-                className="text-6xl font-black my-8"
-                style={{
-                  color: color,
-                  fontFamily: "'Noto Sans KR', sans-serif",
-                  textShadow: `
-                    0 0 8px ${color},
-                    0 0 12px ${color}88,
-                    0 0 16px ${color}66
-                  `,
-                  writingMode: 'vertical-rl',
-                  textOrientation: 'upright',
-                }}
-              >
-                {koreanWords[i % koreanWords.length]}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-      
-      {/* Vertical marquee 2 - right side, bottom to top */}
-      <div
-        ref={verticalMarqueeRef2}
-        className="absolute right-0 top-0 bottom-0 w-[10vw] overflow-hidden pointer-events-none"
-        style={{ zIndex: 55, opacity: 0.4, position: 'fixed' }}
-      >
-        <div className="marquee-content-vertical flex flex-col whitespace-nowrap items-center justify-center h-full">
-          {[...Array(8)].map((_, i) => {
-            const koreanWords = ['환영', '이름', '마법', '별', '우주', '나', '사랑', '희망'];
-            const color = i % 2 === 0 ? KPOP_COLORS.neonPink : KPOP_COLORS.neonCyan;
-            return (
-              <span
-                key={i}
-                lang="ko"
-                className="text-6xl font-black my-8"
-                style={{
-                  color: color,
-                  fontFamily: "'Noto Sans KR', sans-serif",
-                  textShadow: `
-                    0 0 8px ${color},
-                    0 0 12px ${color}88,
-                    0 0 16px ${color}66
-                  `,
-                  writingMode: 'vertical-rl',
-                  textOrientation: 'upright',
-                }}
-              >
-                {koreanWords[(i + 4) % koreanWords.length]}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+      {/* Vertical marquees removed for better performance */}
 
       <style>
         {`
