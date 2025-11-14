@@ -27,6 +27,18 @@ const KPOP_COLORS = {
   darkBg: '#0a0a1a',
   darkBgSecondary: '#1a1a2e',
   darkBgTertiary: '#16213e',
+  // Additional colors for avatar reveal
+  deepPurple: '#9B59B6',
+  pastelPink: '#FFB6C1',
+  warmPeach: '#FFB347',
+  softCoral: '#FF7F7F',
+  skyBlue: '#87CEEB',
+  mintGreen: '#98FB98',
+  coolMint: '#B0E0E6',
+  electricBlue: '#4A90E2',
+  lavender: '#E6E6FA',
+  ivory: '#FFFFF0',
+  warmBeige: '#F5F5DC',
 }
 
 // Component to play avatar videos in sequence for reveal animation
@@ -441,7 +453,6 @@ export function MirrorOfSelfExpression({
   const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null)
   const [step, setStep] = useState<'select' | 'reveal' | 'language'>('select')
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [hoveredLanguage, setHoveredLanguage] = useState<'nl' | 'en' | null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const avatarRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -697,7 +708,7 @@ export function MirrorOfSelfExpression({
           {/* Title with sparkle effect - MORE DRAMATIC */}
           <div ref={revealRef} className="mb-8">
             <h1
-              className="text-5xl md:text-8xl font-black mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-black mb-2 sm:mb-4"
               style={{
                 background: `linear-gradient(135deg, ${KPOP_COLORS.electricBlue} 0%, ${KPOP_COLORS.deepPurple} 30%, ${KPOP_COLORS.pastelPink} 60%, ${KPOP_COLORS.coolMint} 100%)`,
                 WebkitBackgroundClip: 'text',
@@ -711,7 +722,7 @@ export function MirrorOfSelfExpression({
             >
               <span lang="ko" className="korean-text">완벽해요!</span>
             </h1>
-            <p className="text-2xl md:text-4xl font-black"
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black"
               style={{
                 background: `linear-gradient(135deg, ${KPOP_COLORS.deepPurple} 0%, ${KPOP_COLORS.pastelPink} 100%)`,
                 WebkitBackgroundClip: 'text',
@@ -724,9 +735,9 @@ export function MirrorOfSelfExpression({
             </p>
           </div>
 
-          {/* Avatar video container - Kleiner om scrollen te voorkomen */}
+          {/* Avatar video container - Responsive */}
           {selectedAvatar && (
-            <div className="relative w-full max-w-xl mx-auto">
+            <div className="relative w-full max-w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto px-4">
               {/* Multiple glow rings - Minder intens */}
               <div
                 className="absolute inset-0 rounded-full"
@@ -747,12 +758,12 @@ export function MirrorOfSelfExpression({
                 }}
               />
 
-              {/* Avatar video - Kleiner */}
+              {/* Avatar video - Responsive */}
               <div
                 className={`relative w-full aspect-square ${selectedAvatar?.id === 'stitch' ? 'rounded-3xl' : 'rounded-full'} ${selectedAvatar?.id === 'stitch' ? 'overflow-visible' : 'overflow-hidden'} mx-auto`}
                 style={{
-                  maxWidth: '300px',
-                  maxHeight: '300px',
+                  maxWidth: 'clamp(200px, 50vw, 300px)',
+                  maxHeight: 'clamp(200px, 50vw, 300px)',
                   border: `6px solid ${KPOP_COLORS.ivory}`,
                   boxShadow: `
                     0 0 40px ${KPOP_COLORS.electricBlue},
@@ -1110,9 +1121,9 @@ export function MirrorOfSelfExpression({
           })}
         </div>
 
-        <div className="text-center space-y-12 max-w-4xl relative" style={{ zIndex: 20 }}>
+        <div className="text-center space-y-6 sm:space-y-8 md:space-y-12 max-w-4xl relative px-4" style={{ zIndex: 20 }}>
           <h1
-            className="text-6xl md:text-8xl font-black mb-4 glow-text"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-black mb-2 sm:mb-4 glow-text"
             style={{
               color: KPOP_COLORS.neonPink,
               fontFamily: "'Noto Sans KR', 'Nunito', sans-serif",
@@ -1122,7 +1133,7 @@ export function MirrorOfSelfExpression({
             <span lang="ko" className="korean-text">언어를 선택하세요</span>
           </h1>
 
-          <p className="text-3xl md:text-4xl font-black glow-text"
+          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black glow-text"
             style={{
               color: KPOP_COLORS.neonBlue,
               fontFamily: "'Poppins', sans-serif",
@@ -1131,7 +1142,7 @@ export function MirrorOfSelfExpression({
             Choose your language
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center pt-8 relative" style={{ zIndex: 30 }}>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-8 justify-center items-center pt-4 sm:pt-6 md:pt-8 relative" style={{ zIndex: 30 }}>
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -1145,12 +1156,10 @@ export function MirrorOfSelfExpression({
               }}
               className="lang-button group transition-all duration-300 hover:scale-105 active:scale-95 relative"
               style={{ zIndex: 30, pointerEvents: 'auto', cursor: 'pointer' }}
-              onMouseEnter={() => setHoveredLanguage('nl')}
-              onMouseLeave={() => setHoveredLanguage(null)}
               disabled={!selectedAvatarId}
             >
               <div
-                className="relative px-12 py-8 rounded-3xl shadow-2xl transition-transform duration-300 group-hover:translate-y-[-4px] group-active:translate-y-[2px] glow-border"
+                className="relative px-6 py-5 sm:px-8 sm:py-6 md:px-10 md:py-7 lg:px-12 lg:py-8 rounded-2xl sm:rounded-3xl shadow-2xl transition-transform duration-300 group-hover:translate-y-[-4px] group-active:translate-y-[2px] glow-border w-full sm:w-auto min-w-[200px] sm:min-w-[250px]"
                 style={{
                   background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
                   border: `2px solid ${KPOP_COLORS.neonPink}`,
@@ -1179,10 +1188,10 @@ export function MirrorOfSelfExpression({
 
                 <div className="relative">
                   <div 
-                    className="text-4xl md:text-5xl mb-2 font-black"
+                    className="text-3xl sm:text-4xl md:text-5xl mb-1 sm:mb-2 font-black"
                     style={{ 
                       fontFamily: "'Orbitron', sans-serif",
-                      fontSize: '1.8em',
+                      fontSize: 'clamp(1.5em, 4vw, 1.8em)',
                       fontWeight: 900,
                       letterSpacing: '0.15em',
                       color: KPOP_COLORS.neonPink,
@@ -1191,7 +1200,7 @@ export function MirrorOfSelfExpression({
                     NL
                   </div>
                   <div 
-                    className="text-base md:text-lg font-black"
+                    className="text-sm sm:text-base md:text-lg font-black"
                     style={{ 
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 900,
@@ -1223,7 +1232,7 @@ export function MirrorOfSelfExpression({
               disabled={!selectedAvatarId}
             >
               <div
-                className="relative px-12 py-8 rounded-3xl shadow-2xl transition-transform duration-300 group-hover:translate-y-[-4px] group-active:translate-y-[2px] glow-border"
+                className="relative px-6 py-5 sm:px-8 sm:py-6 md:px-10 md:py-7 lg:px-12 lg:py-8 rounded-2xl sm:rounded-3xl shadow-2xl transition-transform duration-300 group-hover:translate-y-[-4px] group-active:translate-y-[2px] glow-border w-full sm:w-auto min-w-[200px] sm:min-w-[250px]"
                 style={{
                   background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
                   border: `2px solid ${KPOP_COLORS.neonBlue}`,
@@ -1252,10 +1261,10 @@ export function MirrorOfSelfExpression({
 
                 <div className="relative">
                   <div 
-                    className="text-4xl md:text-5xl mb-2 font-black"
+                    className="text-3xl sm:text-4xl md:text-5xl mb-1 sm:mb-2 font-black"
                     style={{ 
                       fontFamily: "'Orbitron', sans-serif",
-                      fontSize: '1.8em',
+                      fontSize: 'clamp(1.5em, 4vw, 1.8em)',
                       fontWeight: 900,
                       letterSpacing: '0.15em',
                       color: KPOP_COLORS.neonBlue,
@@ -1264,7 +1273,7 @@ export function MirrorOfSelfExpression({
                     EN
                   </div>
                   <div 
-                    className="text-base md:text-lg font-black"
+                    className="text-sm sm:text-base md:text-lg font-black"
                     style={{ 
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 900,
@@ -1279,7 +1288,7 @@ export function MirrorOfSelfExpression({
             </button>
           </div>
 
-          <p className="text-xl font-display font-medium glow-text"
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl font-display font-medium glow-text px-4"
             style={{ color: KPOP_COLORS.neonCyan, opacity: 0.8 }}>
             Je kunt dit later altijd veranderen
           </p>
@@ -1465,9 +1474,9 @@ export function MirrorOfSelfExpression({
         ))}
       </div>
 
-      {/* Title - MORE DRAMATIC */}
+      {/* Title - Responsive */}
       <h1
-        className="absolute top-[8%] text-6xl md:text-8xl font-black text-center z-20 px-4"
+        className="absolute top-[5%] sm:top-[8%] text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black text-center z-20 px-4"
         style={{
           background: `linear-gradient(135deg, ${KPOP_COLORS.electricBlue} 0%, ${KPOP_COLORS.deepPurple} 30%, ${KPOP_COLORS.pastelPink} 60%, ${KPOP_COLORS.coolMint} 100%)`,
           WebkitBackgroundClip: 'text',
@@ -1481,8 +1490,8 @@ export function MirrorOfSelfExpression({
         <span lang="ko" className="korean-text">아바타를 선택하세요</span>
       </h1>
 
-      {/* Subtitle */}
-      <p className="absolute top-[17%] text-2xl md:text-3xl font-black text-center z-20 px-4"
+      {/* Subtitle - Responsive */}
+      <p className="absolute top-[12%] sm:top-[17%] text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-center z-20 px-4"
         style={{
           background: `linear-gradient(135deg, ${KPOP_COLORS.deepPurple} 0%, ${KPOP_COLORS.electricBlue} 100%)`,
           WebkitBackgroundClip: 'text',
@@ -1494,8 +1503,8 @@ export function MirrorOfSelfExpression({
         Choose your perfect avatar
       </p>
 
-      {/* Avatar grid - Neon icons with Korean text frames between them */}
-      <div className="absolute top-[75%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl flex flex-wrap items-center justify-center gap-4 md:gap-6 z-20 px-4">
+      {/* Avatar grid - Responsive layout */}
+      <div className="absolute top-[50%] sm:top-[60%] md:top-[70%] lg:top-[75%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 z-20 px-2 sm:px-4">
         {availableAvatars.flatMap((avatar, index) => {
           // Different neon colors for each card
           const neonColors = [
@@ -1508,9 +1517,6 @@ export function MirrorOfSelfExpression({
           const cardColor = neonColors[index % neonColors.length];
           const isSelected = selectedAvatarId === avatar.id;
           const isHovered = hoveredIndex === index;
-          
-          // Alternate between microphone and noodles icons
-          const iconSrc = index % 2 === 0 ? '/icon_micrphone.png' : '/icon_noodles.png';
           
           const koreanWords = ['우주', '마법', '꿈', '사랑', '희망', '별', '모험', '여행'];
           const frameColor = [KPOP_COLORS.neonPink, KPOP_COLORS.neonBlue, KPOP_COLORS.neonPurple, KPOP_COLORS.neonCyan][index % 4];
@@ -1525,14 +1531,14 @@ export function MirrorOfSelfExpression({
           const fontSize = 20 + (index % 3) * 15; // Variabele font sizes
 
           return [
-            // Korean text frame before avatar (except first)
+            // Korean text frame before avatar (except first) - Responsive
             index > 0 && (
               <div
                 key={`frame-${index}`}
                 className="relative flex items-center justify-center"
                 style={{
-                  width: `${frameSize.w}px`,
-                  height: `${frameSize.h}px`,
+                  width: `clamp(${frameSize.w * 0.6}px, ${frameSize.w * 0.8}vw, ${frameSize.w}px)`,
+                  height: `clamp(${frameSize.h * 0.6}px, ${frameSize.h * 0.8}vw, ${frameSize.h}px)`,
                 }}
               >
                 <div
@@ -1576,8 +1582,13 @@ export function MirrorOfSelfExpression({
                 className="relative rounded-2xl overflow-hidden"
                 style={{
                   aspectRatio: '1 / 1',
-                  minHeight: (avatar.id === 'stitch' || avatar.id === 'spiderman') ? '220px' : '200px',
-                  maxHeight: (avatar.id === 'stitch' || avatar.id === 'spiderman') ? '240px' : '220px',
+                  width: 'clamp(120px, 20vw, 200px)',
+                  minHeight: (avatar.id === 'stitch' || avatar.id === 'spiderman') 
+                    ? 'clamp(140px, 22vw, 220px)' 
+                    : 'clamp(120px, 20vw, 200px)',
+                  maxHeight: (avatar.id === 'stitch' || avatar.id === 'spiderman') 
+                    ? 'clamp(160px, 24vw, 240px)' 
+                    : 'clamp(140px, 22vw, 220px)',
                   background: 'transparent', // Transparent background
                   border: isSelected 
                     ? `3px solid ${cardColor.border}`
@@ -1610,6 +1621,13 @@ export function MirrorOfSelfExpression({
                     style={{
                       padding: (avatar.id === 'stitch' || avatar.id === 'spiderman') ? '8%' : '1rem',
                       overflow: 'visible',
+                      filter: isSelected 
+                        ? `drop-shadow(0 0 30px ${cardColor.glow}88) drop-shadow(0 0 60px ${cardColor.glow}66)`
+                        : isHovered
+                        ? `drop-shadow(0 0 20px ${cardColor.glow}66) drop-shadow(0 0 40px ${cardColor.glow}44)`
+                        : `drop-shadow(0 0 10px ${cardColor.glow}33)`,
+                      transition: 'filter 0.3s ease',
+                      transform: (avatar.id === 'stitch' || avatar.id === 'spiderman') ? 'scale(1.2)' : 'scale(1)',
                     }}
                   >
                     <AvatarVideo
@@ -1620,16 +1638,6 @@ export function MirrorOfSelfExpression({
                       muted
                       static={true}
                       className="w-full h-full"
-                      style={{
-                        filter: isSelected 
-                          ? `drop-shadow(0 0 30px ${cardColor.glow}88) drop-shadow(0 0 60px ${cardColor.glow}66)`
-                          : isHovered
-                          ? `drop-shadow(0 0 20px ${cardColor.glow}66) drop-shadow(0 0 40px ${cardColor.glow}44)`
-                          : `drop-shadow(0 0 10px ${cardColor.glow}33)`,
-                        transition: 'filter 0.3s ease',
-                        // Maak Stitch en Spiderman groter binnen de card
-                        transform: (avatar.id === 'stitch' || avatar.id === 'spiderman') ? 'scale(1.2)' : 'scale(1)',
-                      }}
                     />
                   </div>
 
@@ -1667,13 +1675,13 @@ export function MirrorOfSelfExpression({
       </div>
 
 
-        {/* Helper text - Onderaan */}
+        {/* Helper text - Responsive */}
         {!selectedAvatarId && (
-          <div className="absolute bottom-8 text-lg md:text-xl font-display font-medium text-center px-4 z-20 flex items-center justify-center gap-3 glow-text"
+          <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 text-sm sm:text-base md:text-lg lg:text-xl font-display font-medium text-center px-4 z-20 flex items-center justify-center gap-2 sm:gap-3 glow-text"
             style={{ color: KPOP_COLORS.neonCyan }}>
-            <img src="/icon_star_alone-removebg-preview.png" alt="" className="w-5 h-5 md:w-6 md:h-6 object-contain" />
-            Klik op een avatar om te kiezen
-            <img src="/icon_star_alone-removebg-preview.png" alt="" className="w-5 h-5 md:w-6 md:h-6 object-contain" />
+            <img src="/icon_star_alone-removebg-preview.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 object-contain" />
+            <span className="whitespace-nowrap">Klik op een avatar om te kiezen</span>
+            <img src="/icon_star_alone-removebg-preview.png" alt="" className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 object-contain" />
           </div>
         )}
 
