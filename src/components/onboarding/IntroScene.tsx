@@ -41,11 +41,13 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
   const [showButton, setShowButton] = useState(false)
   const [showCatMessage, setShowCatMessage] = useState(false)
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const [isCatHovered, setIsCatHovered] = useState(false)
   const marqueeRef = useRef<HTMLDivElement>(null)
   const verticalMarqueeRef1 = useRef<HTMLDivElement>(null)
   const verticalMarqueeRef2 = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
   const catMessageRef = useRef<HTMLDivElement>(null)
+  const catTooltipRef = useRef<HTMLDivElement>(null)
 
   // Na 3 seconden de button tonen (GIF's zijn direct zichtbaar)
   useEffect(() => {
