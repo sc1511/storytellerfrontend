@@ -3096,7 +3096,7 @@ export default function StoryReaderPage() {
               </h2>
 
               {/* Avatar with Text Bubble - ALWAYS visible when modal is open */}
-              <div className="mb-4 flex flex-col items-center justify-center gap-3">
+              <div className="mb-4 flex flex-row items-center justify-center gap-4">
                 {/* Avatar - ALWAYS visible, use direct img tag for reliability */}
                 <div 
                   className="cursor-pointer transition-transform hover:scale-105 active:scale-95 flex-shrink-0"
