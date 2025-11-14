@@ -334,6 +334,45 @@ export default function StoryReaderPage() {
     }
   }, [sessionId, navigate]);
 
+  // Load test completion status from API when session is loaded
+  useEffect(() => {
+    if (currentSession && currentProfile && currentSession.session_id) {
+      const childName = currentProfile.displayName || currentProfile.name;
+      if (childName) {
+        // Load comprehension results to check which segments have completed tests
+        storyAPI.getComprehensionResults(childName, 30) // Get last 30 days
+          .then((response) => {
+            if (response.success && response.data) {
+              // Filter results for this session
+              const sessionResults = response.data.filter((result: any) => 
+                result.session_id === currentSession.session_id
+              );
+              
+              // Build completion map
+              const completedMap: { [segmentIndex: number]: boolean } = {};
+              sessionResults.forEach((result: any) => {
+                const segmentSeq = result.segment_sequence || result.segmentSequence || 1;
+                // Find segment index by sequence
+                const segmentIndex = currentSession.story_segments.findIndex(
+                  (seg: any) => (seg.sequence || 0) === segmentSeq
+                );
+                if (segmentIndex >= 0) {
+                  completedMap[segmentIndex] = true;
+                }
+              });
+              
+              // Update test completion status
+              setTestCompletedForSegment(completedMap);
+            }
+          })
+          .catch((error) => {
+            // Silently fail - don't show error to user
+            console.error('Error loading test completion status:', error);
+          });
+      }
+    }
+  }, [currentSession?.session_id, currentProfile?.id]);
+
   // Avatar: keep visible, don't hide it
   // Removed the logic that hides the avatar - it should stay visible
 
@@ -978,14 +1017,23 @@ export default function StoryReaderPage() {
   };
 
   const handlePreviousSegment = () => {
-    if (currentSegmentIndex > 0) {
-      setCurrentSegmentIndex((prev) => prev - 1);
-      // Reset comprehension answers when changing segments
+    // Block navigation to previous segments - only allow going to last segment if story is not completed
+    // If story is completed, don't allow any navigation
+    if (currentSession.completed) {
+      return; // Story is completed, no navigation allowed
+    }
+    
+    // Only allow navigation to the last segment (if not already there)
+    const lastSegmentIndex = currentSession.story_segments.length - 1;
+    if (currentSegmentIndex < lastSegmentIndex) {
+      // Navigate to last segment
+      setCurrentSegmentIndex(lastSegmentIndex);
       setComprehensionAnswers({});
       setShowComprehensionResults(false);
       setShowComprehensionTest(false);
       setCurrentQuestionIndex(0);
     }
+    // If already at last segment, do nothing (can't go back)
   };
 
   if (isLoading) {
@@ -1588,7 +1636,20 @@ export default function StoryReaderPage() {
                       );
                     }
                     
-                    if (!canTakeTest) return null;
+                    // Check if test is already completed for this segment
+                    const isTestAlreadyCompleted = testCompletedForSegment[currentSegmentIndex] || false;
+                    const hasQuestions = currentSegment?.comprehension_questions && 
+                                       Array.isArray(currentSegment.comprehension_questions) && 
+                                       currentSegment.comprehension_questions.length > 0;
+                    
+                    // Only show button if there are questions AND test is not already completed
+                    // OR if it's the last segment and story is not completed (allow retaking last test)
+                    const isLastSegment = currentSegmentIndex === currentSession.story_segments.length - 1;
+                    const canTakeTest = hasQuestions && (!isTestAlreadyCompleted || (isLastSegment && !currentSession.completed));
+                    
+                    if (!canTakeTest) {
+                      return null; // Don't show button if test is already completed (except last segment if story not completed)
+                    }
                     
                     return (
                     <div className="relative flex items-center gap-3">
@@ -2527,24 +2588,34 @@ export default function StoryReaderPage() {
                     }}
                   >
                     {/* Test Reminder Message - Above Avatar on Last Segment */}
-                    {isLastSegment && currentSegment?.comprehension_questions && 
-                     Array.isArray(currentSegment.comprehension_questions) && 
-                     currentSegment.comprehension_questions.length > 0 &&
-                     !testCompletedForSegment[currentSegmentIndex] && (
-                      <div className="mb-4 px-4 py-3 rounded-lg text-center" style={{
-                        background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
-                        border: '2px solid #ffc107',
-                        boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
-                        maxWidth: 'min(400px, calc(100vw - 40px))',
-                      }}>
-                        <p className="text-base font-bold" style={{
-                          color: '#856404',
-                          fontFamily: "'Comfortaa', sans-serif",
+                    {(() => {
+                      const lastSegmentIndex = currentSession.story_segments.length - 1;
+                      const lastSegment = currentSession.story_segments[lastSegmentIndex];
+                      const hasTestQuestions = lastSegment?.comprehension_questions && 
+                                             Array.isArray(lastSegment.comprehension_questions) && 
+                                             lastSegment.comprehension_questions.length > 0;
+                      const isTestCompleted = testCompletedForSegment[lastSegmentIndex] || false;
+                      const isCurrentlyLastSegment = currentSegmentIndex === lastSegmentIndex;
+                      
+                      // Show reminder if: on last segment OR story is completed, has test questions, and test is not completed
+                      return (isCurrentlyLastSegment || currentSession.completed) && 
+                             hasTestQuestions && 
+                             !isTestCompleted && (
+                        <div className="mb-4 px-4 py-3 rounded-lg text-center" style={{
+                          background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
+                          border: '2px solid #ffc107',
+                          boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
+                          maxWidth: 'min(400px, calc(100vw - 40px))',
                         }}>
-                          ⚠️ Vergeet niet je test nog te doen!
-                        </p>
-                      </div>
-                    )}
+                          <p className="text-base font-bold" style={{
+                            color: '#856404',
+                            fontFamily: "'Comfortaa', sans-serif",
+                          }}>
+                            ⚠️ Vergeet niet je test nog te doen!
+                          </p>
+                        </div>
+                      );
+                    })()}
                     
                     {/* Text Bubble Above Avatar */}
                     {showAvatarBubbleAboveLargeAvatar && avatarMessage && avatarMessageType === 'completion' && (
