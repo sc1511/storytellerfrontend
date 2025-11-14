@@ -792,7 +792,7 @@ export default function ParentDashboard() {
               {reportData.stories && reportData.stories.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📖 Verhalen van deze week</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-4">
                     {reportData.stories.map((story: any, idx: number) => {
                       // Calculate average test score for this story using BEST scores per segment
                       let avgScore = null;
@@ -816,7 +816,7 @@ export default function ParentDashboard() {
                       return (
                         <div
                           key={story.session_id || story.sessionId || idx}
-                          className="p-5 rounded-2xl transition-all"
+                          className="p-4 rounded-xl transition-all"
                           style={{
                             background: story.isCompleted
                               ? 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)'
@@ -827,41 +827,70 @@ export default function ParentDashboard() {
                               : '0 0 20px rgba(156, 39, 176, 0.3)',
                           }}
                         >
-                          {/* Header */}
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <h3
-                                className="text-lg font-bold mb-1"
-                                style={{
-                                  color: story.isCompleted ? '#006064' : '#4a148c',
-                                  fontFamily: "'Poppins', sans-serif",
-                                }}
-                              >
-                                {story.character} verhaal
-                              </h3>
-                              <p
-                                className="text-xs opacity-80 mb-2"
-                                style={{
-                                  color: story.isCompleted ? '#00838f' : '#6a1b9a',
-                                  fontFamily: "'Poppins', sans-serif",
-                                }}
-                              >
-                                📅 {new Date(story.date || story.created_at).toLocaleDateString('nl-NL')}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {story.isCompleted && (
-                                <span
-                                  className="text-xs px-2 py-1 rounded-full flex-shrink-0"
-                                  style={{
-                                    background: '#00bcd4',
-                                    color: '#ffffff',
+                          {/* Horizontal Row Layout */}
+                          <div className="flex items-center justify-between gap-4">
+                            {/* Left: Story Info */}
+                            <div className="flex-1 flex items-center gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h3
+                                    className="text-lg font-bold"
+                                    style={{
+                                      color: story.isCompleted ? '#006064' : '#4a148c',
+                                      fontFamily: "'Poppins', sans-serif",
+                                    }}
+                                  >
+                                    {story.character} verhaal
+                                  </h3>
+                                  {story.isCompleted && (
+                                    <span
+                                      className="text-xs px-2 py-1 rounded-full flex-shrink-0"
+                                      style={{
+                                        background: '#00bcd4',
+                                        color: '#ffffff',
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      ✓ Voltooid
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm">
+                                  <span style={{ 
+                                    color: '#000000',
+                                    fontFamily: "'Poppins', sans-serif",
                                     fontWeight: 600,
-                                  }}
-                                >
-                                  ✓ Voltooid
-                                </span>
-                              )}
+                                  }}>
+                                    📅 {new Date(story.date || story.created_at).toLocaleDateString('nl-NL')}
+                                  </span>
+                                  <span style={{ 
+                                    color: '#000000',
+                                    fontFamily: "'Poppins', sans-serif",
+                                    fontWeight: 600,
+                                  }}>
+                                    📖 {story.segmentCount} {story.segmentCount === 1 ? 'segment' : 'segmenten'}
+                                  </span>
+                                  {avgScore !== null && (
+                                    <span 
+                                      style={{ 
+                                        fontFamily: "'Poppins', sans-serif",
+                                        fontWeight: 700,
+                                        fontSize: '1rem',
+                                        background: story.isCompleted ? '#00bcd4' : '#9c27b0',
+                                        color: '#ffffff',
+                                        padding: '4px 12px',
+                                        borderRadius: '12px',
+                                      }}
+                                    >
+                                      ⭐ {avgScore}%
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right: Delete Button */}
+                            <div className="flex items-center gap-2">
                               <button
                                 onClick={async () => {
                                   if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen? Dit kan niet ongedaan worden gemaakt.')) {
@@ -919,45 +948,16 @@ export default function ParentDashboard() {
                             </div>
                           </div>
 
-                          {/* Story Info */}
-                          <div className="mb-3 pb-3 border-b-2" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
-                            <div className="flex items-center justify-between text-sm">
-                              <span style={{ 
-                                color: '#000000',
-                                fontFamily: "'Poppins', sans-serif",
-                                fontWeight: 700,
-                                fontSize: '0.95rem',
-                              }}>
-                                📖 {story.segmentCount} {story.segmentCount === 1 ? 'segment' : 'segmenten'}
-                              </span>
-                              {avgScore !== null && (
-                                <span 
-                                  style={{ 
-                                    fontFamily: "'Poppins', sans-serif",
-                                    fontWeight: 700,
-                                    fontSize: '1.2rem',
-                                    background: story.isCompleted ? '#00bcd4' : '#9c27b0',
-                                    color: '#ffffff',
-                                    padding: '4px 12px',
-                                    borderRadius: '12px',
-                                  }}
-                                >
-                                  ⭐ {avgScore}%
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Test Results - Grouped by segment, showing only highest score per segment */}
-                          {story.testResults && story.testResults.length > 0 ? (
-                            <div>
-                              <div className="text-sm font-bold mb-3" style={{ 
+                          {/* Test Results - Below the row, collapsible or always visible */}
+                          {story.testResults && story.testResults.length > 0 && (
+                            <div className="mt-3 pt-3 border-t-2" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
+                              <div className="text-sm font-bold mb-2" style={{ 
                                 color: '#000000',
                                 fontFamily: "'Poppins', sans-serif",
                               }}>
                                 Test Scores (Beste score per segment):
                               </div>
-                              <div className="space-y-2">
+                              <div className="flex flex-wrap gap-2">
                                 {(() => {
                                   // Group tests by segment sequence and keep only the highest score for each segment
                                   const segmentMap = new Map<number, any>();
@@ -981,7 +981,7 @@ export default function ParentDashboard() {
                                     return (
                                       <div
                                         key={test.id || `segment-${segmentSeq}-${testIdx}`}
-                                        className="p-3 rounded-lg"
+                                        className="px-3 py-2 rounded-lg"
                                         style={{
                                           background: test.percentageScore >= 67 
                                             ? 'rgba(76, 175, 80, 0.3)' 
@@ -997,48 +997,25 @@ export default function ParentDashboard() {
                                           }`,
                                         }}
                                       >
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex flex-col">
-                                            <span className="text-sm font-bold" style={{ color: '#000000' }}>
-                                              Segment {segmentSeq}
-                                            </span>
-                                            <span className="text-xs opacity-70" style={{ color: '#000000' }}>
-                                              Beste score
-                                            </span>
-                                          </div>
-                                          <div className="text-right">
-                                            <span className="text-lg font-bold block" style={{ 
-                                              color: test.percentageScore >= 67 
-                                                ? '#4caf50' 
-                                                : test.percentageScore >= 33 
-                                                ? '#ff9800' 
-                                                : '#f44336',
-                                            }}>
-                                              {test.correctAnswers}/{test.totalQuestions}
-                                            </span>
-                                            <span className="text-xs font-semibold" style={{ 
-                                              color: test.percentageScore >= 67 
-                                                ? '#4caf50' 
-                                                : test.percentageScore >= 33 
-                                                ? '#ff9800' 
-                                                : '#f44336',
-                                            }}>
-                                              {test.percentageScore}%
-                                            </span>
-                                          </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm font-bold" style={{ color: '#000000' }}>
+                                            Segment {segmentSeq}:
+                                          </span>
+                                          <span className="text-sm font-bold" style={{ 
+                                            color: test.percentageScore >= 67 
+                                              ? '#4caf50' 
+                                              : test.percentageScore >= 33 
+                                              ? '#ff9800' 
+                                              : '#f44336',
+                                          }}>
+                                            {test.correctAnswers}/{test.totalQuestions} ({test.percentageScore}%)
+                                          </span>
                                         </div>
                                       </div>
                                     );
                                   });
                                 })()}
                               </div>
-                            </div>
-                          ) : (
-                            <div className="text-sm text-center py-3 font-medium" style={{ 
-                              color: '#000000',
-                              opacity: 0.6,
-                            }}>
-                              Geen tests gemaakt
                             </div>
                           )}
                         </div>
