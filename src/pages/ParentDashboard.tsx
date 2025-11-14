@@ -1026,6 +1026,133 @@ export default function ParentDashboard() {
                                     </span>
                                   )}
                                 </div>
+                                
+                                {/* Story Metrics - Rich Content */}
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  <div className="flex flex-wrap gap-3 text-xs">
+                                    {/* Originality Score */}
+                                    {story.metadata?.creativity_metrics?.originality_score && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(233, 30, 99, 0.1)',
+                                        border: '1px solid rgba(233, 30, 99, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#e91e63', fontWeight: 600 }}>🎨</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {Math.round(story.metadata.creativity_metrics.originality_score)}% Originaliteit
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Sensory Language */}
+                                    {(story.metadata?.creativity_metrics?.sensory_language_percentage || 
+                                      story.metadata?.creativity_metrics?.sensory_language_density) && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(255, 152, 0, 0.1)',
+                                        border: '1px solid rgba(255, 152, 0, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#ff9800', fontWeight: 600 }}>👁️</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {Math.round(story.metadata.creativity_metrics.sensory_language_percentage || 
+                                                    story.metadata.creativity_metrics.sensory_language_density || 0)}% Zintuiglijk
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Educational Themes */}
+                                    {story.metadata?.educational_themes && 
+                                     Array.isArray(story.metadata.educational_themes) && 
+                                     story.metadata.educational_themes.length > 0 && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(76, 175, 80, 0.1)',
+                                        border: '1px solid rgba(76, 175, 80, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#4caf50', fontWeight: 600 }}>📚</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {story.metadata.educational_themes.length} {story.metadata.educational_themes.length === 1 ? 'thema' : 'thema\'s'}
+                                        </span>
+                                        <span className="ml-1" style={{ color: '#999999', fontSize: '10px' }}>
+                                          ({story.metadata.educational_themes.slice(0, 2).join(', ')}{story.metadata.educational_themes.length > 2 ? '...' : ''})
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Imaginative Elements */}
+                                    {story.metadata?.creativity_metrics?.imaginative_elements && 
+                                     Array.isArray(story.metadata.creativity_metrics.imaginative_elements) && 
+                                     story.metadata.creativity_metrics.imaginative_elements.length > 0 && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(156, 39, 176, 0.1)',
+                                        border: '1px solid rgba(156, 39, 176, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#9c27b0', fontWeight: 600 }}>✨</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {story.metadata.creativity_metrics.imaginative_elements.length} {story.metadata.creativity_metrics.imaginative_elements.length === 1 ? 'element' : 'elementen'}
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Character Development */}
+                                    {story.metadata?.creativity_metrics?.character_development_depth && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(118, 75, 162, 0.1)',
+                                        border: '1px solid rgba(118, 75, 162, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#764ba2', fontWeight: 600 }}>👤</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {story.metadata.creativity_metrics.character_development_depth}/10 Karakter
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Plot Complexity */}
+                                    {story.metadata?.creativity_metrics?.plot_complexity && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(102, 126, 234, 0.1)',
+                                        border: '1px solid rgba(102, 126, 234, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#667eea', fontWeight: 600 }}>📖</span>
+                                        <span style={{ color: '#666666', textTransform: 'capitalize' }}>
+                                          {story.metadata.creativity_metrics.plot_complexity}
+                                        </span>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Advanced Vocabulary Count */}
+                                    {story.metadata?.vocabulary_metrics?.advanced_vocabulary && 
+                                     Array.isArray(story.metadata.vocabulary_metrics.advanced_vocabulary) && 
+                                     story.metadata.vocabulary_metrics.advanced_vocabulary.length > 0 && (
+                                      <div className="flex items-center gap-1 px-2 py-1 rounded" style={{
+                                        background: 'rgba(33, 150, 243, 0.1)',
+                                        border: '1px solid rgba(33, 150, 243, 0.3)',
+                                      }}>
+                                        <span style={{ color: '#2196f3', fontWeight: 600 }}>📝</span>
+                                        <span style={{ color: '#666666' }}>
+                                          {story.metadata.vocabulary_metrics.advanced_vocabulary.length} {story.metadata.vocabulary_metrics.advanced_vocabulary.length === 1 ? 'woord' : 'woorden'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Full Educational Themes List (if available) */}
+                                  {story.metadata?.educational_themes && 
+                                   Array.isArray(story.metadata.educational_themes) && 
+                                   story.metadata.educational_themes.length > 0 && (
+                                    <div className="mt-2 text-xs" style={{ color: '#666666' }}>
+                                      <span className="font-semibold" style={{ color: '#4caf50' }}>Thema's: </span>
+                                      <span>{story.metadata.educational_themes.join(', ')}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Full Imaginative Elements List (if available) */}
+                                  {story.metadata?.creativity_metrics?.imaginative_elements && 
+                                   Array.isArray(story.metadata.creativity_metrics.imaginative_elements) && 
+                                   story.metadata.creativity_metrics.imaginative_elements.length > 0 && (
+                                    <div className="mt-1 text-xs" style={{ color: '#666666' }}>
+                                      <span className="font-semibold" style={{ color: '#9c27b0' }}>Elementen: </span>
+                                      <span>{story.metadata.creativity_metrics.imaginative_elements.join(', ')}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
 
