@@ -110,6 +110,7 @@ export default function ParentDashboard() {
   const [storiesDropdownOpen, setStoriesDropdownOpen] = useState(true);
   const [selectedStories, setSelectedStories] = useState<Set<string>>(new Set());
   const [expandedSegments, setExpandedSegments] = useState<Set<string>>(new Set());
+  const [expandedStories, setExpandedStories] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (token) {
@@ -748,6 +749,8 @@ export default function ParentDashboard() {
                         return matched;
                       };
                       
+                      const isStoryExpanded = expandedStories.has(sessionId);
+                      
                       return (
                         <div
                           key={sessionId || idx}
@@ -762,14 +765,29 @@ export default function ParentDashboard() {
                               : '0 0 15px rgba(156, 39, 176, 0.2)',
                           }}
                         >
-                          {/* Horizontal Row Layout - Compact */}
-                          <div className="flex items-center justify-between gap-3">
+                          {/* Story Header - Clickable to expand/collapse */}
+                          <div 
+                            className="flex items-center justify-between gap-3 cursor-pointer"
+                            onClick={() => {
+                              const newExpanded = new Set(expandedStories);
+                              if (isStoryExpanded) {
+                                newExpanded.delete(sessionId);
+                              } else {
+                                newExpanded.add(sessionId);
+                              }
+                              setExpandedStories(newExpanded);
+                            }}
+                          >
                             {/* Left: Checkbox + Story Info */}
                             <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <span className="text-sm font-bold" style={{ color: '#666666' }}>
+                                {isStoryExpanded ? '▼' : '▶'}
+                              </span>
                               <input
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={(e) => {
+                                  e.stopPropagation();
                                   const newSelected = new Set(selectedStories);
                                   if (e.target.checked) {
                                     newSelected.add(sessionId);
@@ -780,6 +798,7 @@ export default function ParentDashboard() {
                                 }}
                                 className="w-4 h-4 cursor-pointer flex-shrink-0"
                                 style={{ accentColor: '#667eea' }}
+                                onClick={(e) => e.stopPropagation()}
                               />
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -838,9 +857,52 @@ export default function ParentDashboard() {
                                     </span>
                                   )}
                                 </div>
-                                
-                                {/* Story Metrics - Rich Content */}
-                                <div className="mt-2 pt-2 border-t border-gray-200">
+                              </div>
+                            </div>
+
+                            {/* Right: Small Delete Button */}
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!window.confirm('Weet je zeker dat je dit verhaal wilt verwijderen?')) {
+                                  return;
+                                }
+                                try {
+                                  await axios.delete(
+                                    `${API_BASE_URL}/auth/parent/story/${sessionId}`,
+                                    {
+                                      headers: {
+                                        Authorization: `Bearer ${token}`,
+                                      },
+                                    }
+                                  );
+                                  // Refresh report data
+                                  if (reportData?.childProfileId) {
+                                    handleRequestReport(reportData.childProfileId, reportData.childName || '');
+                                  }
+                                  } catch (err: any) {
+                                    alert(getUserFriendlyError(err, 'Kon het verhaal niet verwijderen. Probeer het later opnieuw.'));
+                                  }
+                              }}
+                              className="px-2 py-1 text-xs rounded transition-all hover:bg-red-100"
+                              style={{
+                                background: '#f5f5f5',
+                                color: '#d32f2f',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                border: '1px solid #d32f2f',
+                              }}
+                              title="Verhaal verwijderen"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                          
+                          {/* Expanded Story Details */}
+                          {isStoryExpanded && (
+                            <div className="mt-3 pt-3 border-t" style={{ borderColor: story.isCompleted ? '#00bcd4' : '#9c27b0' }}>
+                              {/* Story Metrics - Rich Content */}
+                              <div className="mt-2 pt-2 border-t border-gray-200">
                                   <div className="flex flex-wrap gap-3 text-xs">
                                     {/* Originality Score */}
                                     {story.metadata?.creativity_metrics?.originality_score && (
@@ -1199,8 +1261,10 @@ export default function ParentDashboard() {
                                       </div>
                                     );
                                   });
-                                })()}
-                              </div>
+                                    })()}
+                                    </div>
+                                  </div>
+                                )}
                             </div>
                           )}
                         </div>
