@@ -3,6 +3,85 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Helper function to convert technical errors to user-friendly messages
+const getUserFriendlyError = (err: any, defaultMessage: string = 'Er ging iets mis'): string => {
+  // Log technical details to console (for debugging) but don't show to user
+  console.error('Technical error details:', {
+    code: err?.code,
+    message: err?.message,
+    status: err?.response?.status,
+    statusText: err?.response?.statusText,
+    url: err?.config?.url,
+  });
+
+  // Network/connection errors
+  if (err?.code === 'ERR_NETWORK' || err?.message?.includes('Network Error') || !err?.response) {
+    return 'Kan niet verbinden met de server. Probeer het later opnieuw.';
+  }
+
+  // CORS errors (don't show technical details)
+  if (err?.response?.status === 0) {
+    return 'Verbindingsprobleem. Probeer het later opnieuw.';
+  }
+
+  // HTTP status codes - friendly messages
+  if (err?.response?.status === 401) {
+    return 'Je bent niet ingelogd. Log opnieuw in.';
+  }
+  if (err?.response?.status === 403) {
+    return 'Je hebt geen toegang tot deze informatie.';
+  }
+  if (err?.response?.status === 404) {
+    return 'Niet gevonden. Controleer of alles correct is ingevuld.';
+  }
+  if (err?.response?.status === 500) {
+    return 'Server probleem. Probeer het later opnieuw.';
+  }
+
+  // Backend error messages (if they're user-friendly)
+  if (err?.response?.data?.message) {
+    const backendMessage = err.response.data.message;
+    // Filter out technical messages
+    if (backendMessage.includes('CORS') || 
+        backendMessage.includes('ERR_') || 
+        backendMessage.includes('http://') || 
+        backendMessage.includes('https://') ||
+        backendMessage.includes('localhost')) {
+      return defaultMessage;
+    }
+    return backendMessage;
+  }
+
+  if (err?.response?.data?.error) {
+    const backendError = err.response.data.error;
+    // Filter out technical messages
+    if (backendError.includes('CORS') || 
+        backendError.includes('ERR_') || 
+        backendError.includes('http://') || 
+        backendError.includes('https://')) {
+      return defaultMessage;
+    }
+    return backendError;
+  }
+
+  // Generic error messages - filter technical ones
+  if (err?.message) {
+    const msg = err.message;
+    if (msg.includes('CORS') || 
+        msg.includes('ERR_') || 
+        msg.includes('Network Error') ||
+        msg.includes('timeout') ||
+        msg.includes('http://') || 
+        msg.includes('https://') ||
+        msg.includes('localhost')) {
+      return defaultMessage;
+    }
+    return msg;
+  }
+
+  return defaultMessage;
+};
+
 interface Child {
   id: string;
   name: string;
@@ -56,7 +135,7 @@ export default function ParentDashboard() {
       setIsLoggedIn(true);
       fetchChildren();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login mislukt');
+      setError(getUserFriendlyError(err, 'Login mislukt. Controleer je email en wachtwoord.'));
     } finally {
       setLoading(false);
     }
@@ -86,25 +165,7 @@ export default function ParentDashboard() {
       setIsLoggedIn(true);
       fetchChildren();
     } catch (err: any) {
-      console.error('Registration error:', err);
-      console.error('Error code:', err.code);
-      console.error('Error message:', err.message);
-      console.error('Error response:', err.response);
-      console.error('Request URL:', err.config?.url);
-      
-      if (err.code === 'ERR_NETWORK' || err.message?.includes('Network Error') || !err.response) {
-        setError(`Kan niet verbinden met de backend. Controleer of de backend online is: ${API_BASE_URL.replace('/api', '')}/health`);
-      } else if (err.response?.status === 0) {
-        setError('CORS error: Backend staat geen requests toe van deze frontend. Check CORS_ORIGIN in backend.');
-      } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.response?.data?.error) {
-        setError(err.response.data.error);
-      } else if (err.response?.status) {
-        setError(`Server error (${err.response.status}): ${err.response.statusText || 'Onbekende fout'}`);
-      } else {
-        setError(err.message || 'Registratie mislukt');
-      }
+      setError(getUserFriendlyError(err, 'Registratie mislukt. Probeer het opnieuw of gebruik een ander email adres.'));
     } finally {
       setLoading(false);
     }
@@ -121,7 +182,7 @@ export default function ParentDashboard() {
       });
       setChildren(response.data.data || []);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Fout bij ophalen kinderen');
+      setError(getUserFriendlyError(err, 'Kon je kinderen niet ophalen. Probeer het later opnieuw.'));
     }
   };
 
@@ -151,7 +212,7 @@ export default function ParentDashboard() {
       setShowAddChild(false);
       fetchChildren();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Fout bij toevoegen kind');
+      setError(getUserFriendlyError(err, 'Kon het kind niet toevoegen. Controleer of alle velden correct zijn ingevuld.'));
     } finally {
       setLoading(false);
     }
@@ -183,7 +244,7 @@ export default function ParentDashboard() {
 
       fetchChildren(); // Refresh list
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Fout bij verwijderen kind');
+      setError(getUserFriendlyError(err, 'Kon het kind niet verwijderen. Probeer het later opnieuw.'));
     } finally {
       setLoading(false);
     }
@@ -211,8 +272,7 @@ export default function ParentDashboard() {
         await handleRequestReport(reportData.childProfileId, reportData.childName || '');
       }
     } catch (err: any) {
-      console.error('Error deleting stories:', err);
-      alert('Fout bij verwijderen verhalen: ' + (err.response?.data?.message || err.message));
+      alert(getUserFriendlyError(err, 'Kon de verhalen niet verwijderen. Probeer het later opnieuw.'));
     } finally {
       setLoading(false);
     }
@@ -247,35 +307,7 @@ export default function ParentDashboard() {
         setError('Geen rapport data ontvangen');
       }
     } catch (err: any) {
-      console.error('❌ Error requesting report:', err);
-      console.error('❌ Error details:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        url: err.config?.url,
-      });
-      
-      let errorMessage = 'Fout bij ophalen rapport';
-      if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      if (err.response?.status === 404) {
-        errorMessage = 'Kind niet gevonden of geen toegang';
-      } else if (err.response?.status === 403) {
-        errorMessage = 'Geen toegang tot dit rapport';
-      } else if (err.response?.status === 401) {
-        errorMessage = 'Niet ingelogd. Log opnieuw in.';
-      } else if (!err.response) {
-        errorMessage = 'Kan geen verbinding maken met de server. Controleer of de backend draait.';
-      }
-      
-      setError(errorMessage);
+      setError(getUserFriendlyError(err, 'Kon het rapport niet ophalen. Probeer het later opnieuw.'));
     } finally {
       setSendingReport(null);
     }
@@ -1017,10 +1049,9 @@ export default function ParentDashboard() {
                                   if (reportData?.childProfileId) {
                                     handleRequestReport(reportData.childProfileId, reportData.childName || '');
                                   }
-                                } catch (err: any) {
-                                  console.error('Error deleting story:', err);
-                                  alert('Fout bij verwijderen verhaal: ' + (err.response?.data?.message || err.message));
-                                }
+                                  } catch (err: any) {
+                                    alert(getUserFriendlyError(err, 'Kon het verhaal niet verwijderen. Probeer het later opnieuw.'));
+                                  }
                               }}
                               className="px-2 py-1 text-xs rounded transition-all hover:bg-red-100"
                               style={{

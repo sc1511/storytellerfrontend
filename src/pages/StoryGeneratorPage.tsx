@@ -424,17 +424,24 @@ export default function StoryGeneratorPage() {
       console.log('🚀 Story generated successfully, navigating...', response.session_id);
       navigate(`/story/${response.session_id}`, { replace: false });
     } catch (error) {
-      console.error('Error generating story:', error);
+      // Log technical details to console only
+      console.error('Error generating story (technical):', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code,
+        status: (error as any)?.response?.status,
+      });
       
-      let errorMessage = 'Er ging iets mis bij het maken van het verhaal';
+      // User-friendly error messages for children
+      let errorMessage = 'Oeps! Er ging iets mis bij het maken van je verhaal. Probeer het opnieuw! 😊';
       
       if (error instanceof Error) {
-        if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
-          errorMessage = 'Kan niet verbinden met de server. Zorg ervoor dat de backend draait op http://localhost:3000';
+        if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK') || !(error as any)?.response) {
+          errorMessage = 'Kan niet verbinden. Probeer het later opnieuw! 😊';
         } else if (error.message.includes('timeout')) {
-          errorMessage = 'Het verhaal duurt te lang om te genereren. Probeer het opnieuw.';
-        } else {
-          errorMessage = error.message;
+          errorMessage = 'Het duurt te lang. Probeer het opnieuw! 😊';
+        } else if (error.message.includes('CORS') || error.message.includes('ERR_') || error.message.includes('http://') || error.message.includes('https://')) {
+          // Don't show technical errors
+          errorMessage = 'Er ging iets mis. Probeer het opnieuw! 😊';
         }
       }
       

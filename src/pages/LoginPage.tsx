@@ -100,8 +100,20 @@ export default function LoginPage() {
       console.log('✅ Login successful, navigating to /home');
       navigate('/home', { replace: true });
     } catch (err: any) {
-      setError(err.message || 'Code of naam klopt niet. Vraag je ouder om hulp!');
-      console.error('Login error:', err);
+      // User-friendly error for children
+      if (err?.response?.status === 404 || err?.response?.status === 401) {
+        setError('Code of naam klopt niet. Vraag je ouder om hulp! 😊');
+      } else if (err?.code === 'ERR_NETWORK' || !err?.response) {
+        setError('Kan niet verbinden. Vraag je ouder om hulp! 😊');
+      } else {
+        setError('Er ging iets mis. Vraag je ouder om hulp! 😊');
+      }
+      // Log technical details to console only
+      console.error('Login error (technical):', {
+        code: err?.code,
+        status: err?.response?.status,
+        message: err?.message,
+      });
     } finally {
       setIsLoading(false);
     }

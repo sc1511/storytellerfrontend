@@ -320,11 +320,15 @@ export default function StoryReaderPage() {
             setLoading(false);
           })
           .catch((error) => {
-            console.error('Failed to load session:', error);
+            // Log technical details to console only
+            console.error('Failed to load session (technical):', {
+              message: error instanceof Error ? error.message : 'Unknown error',
+              code: (error as any)?.code,
+              status: (error as any)?.response?.status,
+            });
             setLoading(false);
-            // Don't redirect to /generate (which redirects to /onboarding)
-            // Instead, show error and let user go back manually
-            setError('Verhaal niet gevonden. Ga terug naar de bibliotheek.');
+            // User-friendly error for children
+            setError('Verhaal niet gevonden. Ga terug naar de bibliotheek! 📚');
           });
       }
     }
@@ -940,9 +944,16 @@ export default function StoryReaderPage() {
         }, 500);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Er ging iets mis bij het voortzetten van het verhaal';
+      // Log technical details to console only
+      console.error('Error continuing story (technical):', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code,
+        status: (error as any)?.response?.status,
+      });
+      // User-friendly error for children
+      const errorMessage = 'Oeps! Er ging iets mis. Probeer het opnieuw! 😊';
       setError(errorMessage);
-      alert(`Fout bij het voortzetten van het verhaal: ${errorMessage}`);
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
