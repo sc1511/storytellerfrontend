@@ -278,61 +278,73 @@ export default function StoryReaderPage() {
 
   // Load session if we have sessionId but no currentSession
   useEffect(() => {
-    if (sessionId) {
-      const sessions = useStoryStore.getState().sessions;
-      const session = sessions.find((s) => s.session_id === sessionId);
-      
-      if (session) {
-        // Check if session has comprehension questions, if not, reload from API
-        const hasQuestions = session.story_segments.some(seg => seg.comprehension_questions && seg.comprehension_questions.length > 0);
-        
-        // Only reload from API if questions are missing
-        if (!hasQuestions) {
-          setLoading(true);
-          storyAPI.getStorySession(sessionId)
-            .then((sessionFromApi) => {
-              useStoryStore.getState().setCurrentSession(sessionFromApi);
-              useStoryStore.setState((state) => ({
-                sessions: state.sessions.map((s) =>
-                  s.session_id === sessionFromApi.session_id ? sessionFromApi : s
-                ),
-              }));
-              setLoading(false);
-            })
-            .catch((error) => {
-              // Fallback to store session if API fails
-              useStoryStore.getState().setCurrentSession(session);
-              setLoading(false);
-            });
-        } else {
-          // Use session from store if it has questions
-        useStoryStore.getState().setCurrentSession(session);
-        }
-      } else {
-        // Try to load from API if not in store
-        setLoading(true);
-        storyAPI.getStorySession(sessionId)
-          .then((sessionFromApi) => {
-            useStoryStore.getState().setCurrentSession(sessionFromApi);
-            useStoryStore.setState((state) => ({
-              sessions: [...state.sessions, sessionFromApi],
-            }));
-            setLoading(false);
-          })
-          .catch((error) => {
-            // Log technical details to console only
-            console.error('Failed to load session (technical):', {
-              message: error instanceof Error ? error.message : 'Unknown error',
-              code: (error as any)?.code,
-              status: (error as any)?.response?.status,
-            });
-            setLoading(false);
-            // User-friendly error for children
-            setError('Verhaal niet gevonden. Ga terug naar de bibliotheek! 📚');
-          });
-      }
+    if (!sessionId) return;
+    
+    // Check if current session matches - if yes, no need to reload
+    const currentSessionState = useStoryStore.getState().currentSession;
+    if (currentSessionState?.session_id === sessionId) {
+      console.log('✅ Session already loaded:', sessionId);
+      return;
     }
-  }, [sessionId, navigate]);
+    
+    // Always load from API to ensure we have the latest data
+    // This is more reliable than relying on store state
+    console.log('📡 Loading session from API:', sessionId);
+    setLoading(true);
+    setError(null);
+    
+    storyAPI.getStorySession(sessionId)
+      .then((sessionFromApi) => {
+        console.log('✅ Session loaded from API:', {
+          session_id: sessionFromApi.session_id,
+          segments_count: sessionFromApi.story_segments?.length || 0,
+        });
+        
+        // Set as current session
+        useStoryStore.getState().setCurrentSession(sessionFromApi);
+        
+        // Also update/add to sessions array
+        useStoryStore.setState((state) => {
+          const existingIndex = state.sessions.findIndex(
+            (s) => s.session_id === sessionFromApi.session_id
+          );
+          
+          if (existingIndex >= 0) {
+            // Update existing session
+            const updatedSessions = [...state.sessions];
+            updatedSessions[existingIndex] = sessionFromApi;
+            return { sessions: updatedSessions };
+          } else {
+            // Add new session
+            return { sessions: [...state.sessions, sessionFromApi] };
+          }
+        });
+        
+        setLoading(false);
+      })
+      .catch((error) => {
+        // Log technical details to console only
+        console.error('❌ Failed to load session (technical):', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          code: (error as any)?.code,
+          status: (error as any)?.response?.status,
+        });
+        
+        // Try fallback: check if session exists in store
+        const sessions = useStoryStore.getState().sessions;
+        const sessionInStore = sessions.find((s) => s.session_id === sessionId);
+        
+        if (sessionInStore) {
+          console.log('⚠️ Using fallback session from store');
+          useStoryStore.getState().setCurrentSession(sessionInStore);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          // User-friendly error for children
+          setError('Verhaal niet gevonden. Ga terug naar de bibliotheek! 📚');
+        }
+      });
+  }, [sessionId]);
 
   // Load test completion status from API when session is loaded
   useEffect(() => {
@@ -2734,36 +2746,36 @@ export default function StoryReaderPage() {
             // 2. OR no choice has been made yet (first time reading)
             if (hasChoices && (isLastSegment || !choiceAlreadyMade)) {
               return (
-              <>
-                <h3 
-                  className="text-base font-bold mb-2 text-center"
-                  style={{
-                    color: KPOP_COLORS.neonPurple,
-                    fontFamily: "'Orbitron', sans-serif",
-                    fontWeight: 900,
-                    letterSpacing: '0.15em',
-                    flexShrink: 0,
-                    textShadow: `0 0 10px ${KPOP_COLORS.neonPurple}, 0 0 20px ${KPOP_COLORS.neonPurple}66`,
-                  }}
-                >
-                  Wat doe je nu? 🤔
-                </h3>
-                <div 
-                  ref={choicesRef} 
-                  className="flex flex-col gap-2"
-                  style={{ 
-                    flexShrink: 0,
-                    overflowY: 'visible',
-                    flex: '0 0 auto',
-                    minHeight: 0,
-                    position: 'relative',
-                    zIndex: 2,
-                    paddingBottom: '0',
-                    marginBottom: '0',
-                    maxHeight: 'none',
-                  }}
-                >
-                  {currentSegment.next_choices.map((choice, index) => {
+            <>
+              <h3 
+                className="text-base font-bold mb-2 text-center"
+                style={{
+                  color: KPOP_COLORS.neonPurple,
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontWeight: 900,
+                  letterSpacing: '0.15em',
+                  flexShrink: 0,
+                  textShadow: `0 0 10px ${KPOP_COLORS.neonPurple}, 0 0 20px ${KPOP_COLORS.neonPurple}66`,
+                }}
+              >
+                Wat doe je nu? 🤔
+              </h3>
+              <div 
+                ref={choicesRef} 
+                className="flex flex-col gap-2"
+                style={{ 
+                  flexShrink: 0,
+                  overflowY: 'visible',
+                  flex: '0 0 auto',
+                  minHeight: 0,
+                  position: 'relative',
+                  zIndex: 2,
+                  paddingBottom: '0',
+                  marginBottom: '0',
+                  maxHeight: 'none',
+                }}
+              >
+                {currentSegment.next_choices.map((choice, index) => {
                   // Handle different choice formats: object with label/description, or just string
                   let choiceLabel = '';
                   let choiceDescription = '';
@@ -2895,8 +2907,8 @@ export default function StoryReaderPage() {
                     </button>
                   );
                 })}
-                </div>
-                
+              </div>
+              
                 {/* Test Reminder Message - Above Avatar on Last Segment */}
                 {isLastSegment && currentSegment?.comprehension_questions && 
                  Array.isArray(currentSegment.comprehension_questions) && 
@@ -2942,7 +2954,7 @@ export default function StoryReaderPage() {
                   }}>
                     <p 
                       className="text-sm font-semibold text-center"
-                      style={{
+                style={{ 
                         color: '#1b5e20',
                         fontFamily: "'Comfortaa', sans-serif",
                       }}
@@ -2960,14 +2972,14 @@ export default function StoryReaderPage() {
                   </div>
                   <p 
                     className="text-xs text-center"
-                    style={{
+                  style={{
                       color: '#666666',
                       fontFamily: "'Poppins', sans-serif",
-                    }}
+                  }}
                   >
                     Je kunt deze keuze niet meer wijzigen
                   </p>
-                </div>
+              </div>
               );
             }
             
