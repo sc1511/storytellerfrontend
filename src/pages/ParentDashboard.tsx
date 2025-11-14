@@ -316,7 +316,7 @@ export default function ParentDashboard() {
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4" style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
       }}>
         <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl">
           {/* Placeholder styling - zwart */}
@@ -327,7 +327,7 @@ export default function ParentDashboard() {
               opacity: 0.5 !important;
             }
           `}</style>
-          <h1 className="text-3xl font-bold text-center mb-6" style={{ color: '#667eea' }}>
+          <h1 className="text-3xl font-bold text-center mb-6" style={{ color: '#4a7c59' }}>
             Ouder Dashboard
           </h1>
 
@@ -377,7 +377,7 @@ export default function ParentDashboard() {
               disabled={loading}
               className="w-full py-3 rounded-lg font-bold transition-all"
               style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
                 color: '#FFFFFF',
                 opacity: loading ? 0.6 : 1,
               }}
@@ -394,8 +394,8 @@ export default function ParentDashboard() {
               disabled={loading}
               className="w-full py-3 rounded-lg font-bold border-2 transition-all"
               style={{
-                borderColor: '#667eea',
-                color: '#667eea',
+                borderColor: '#4a7c59',
+                color: '#4a7c59',
                 opacity: loading ? 0.6 : 1,
               }}
             >
@@ -415,7 +415,7 @@ export default function ParentDashboard() {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold" style={{ color: '#667eea' }}>
+            <h1 className="text-3xl font-bold" style={{ color: '#4a7c59' }}>
               Ouder Dashboard
             </h1>
             <button
@@ -436,7 +436,7 @@ export default function ParentDashboard() {
             onClick={() => setShowAddChild(!showAddChild)}
             className="w-full py-3 rounded-lg font-bold text-white transition-all"
             style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
             }}
           >
             {showAddChild ? '✕ Annuleren' : '+ Kind Toevoegen'}
@@ -499,7 +499,7 @@ export default function ParentDashboard() {
 
         {/* Children List */}
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4" style={{ color: '#667eea' }}>
+          <h2 className="text-2xl font-bold mb-4" style={{ color: '#4a7c59' }}>
             Mijn Kinderen ({children.length})
           </h2>
 
@@ -520,7 +520,7 @@ export default function ParentDashboard() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2" style={{ color: '#667eea' }}>
+                      <h3 className="text-xl font-bold mb-2" style={{ color: '#4a7c59' }}>
                         {child.name}
                       </h3>
                       <p className="text-gray-600 mb-2">
@@ -558,7 +558,7 @@ export default function ParentDashboard() {
                         {visibleCodes.has(child.id) ? (
                           <div className="p-3 rounded-lg font-mono font-bold text-lg"
                             style={{
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
                               color: 'white',
                               letterSpacing: '0.2em',
                             }}
@@ -574,7 +574,7 @@ export default function ParentDashboard() {
                             }}
                             className="px-4 py-2 rounded-lg text-sm font-bold text-white transition-all hover:scale-105 active:scale-95"
                             style={{
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                              background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)',
                             }}
                           >
                             🔒 Code Tonen
@@ -615,10 +615,10 @@ export default function ParentDashboard() {
             className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-gradient-to-r from-purple-500 to-purple-700 text-white p-6 rounded-t-2xl flex justify-between items-center">
+            <div className="sticky top-0 bg-gradient-to-r from-green-400 to-green-600 text-white p-6 rounded-t-2xl flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold">📚 Rapport: {reportData.childName}</h2>
-                <p className="text-purple-100 text-sm mt-1">
+                <p className="text-green-50 text-sm mt-1">
                   Overzicht van de afgelopen 7 dagen
                 </p>
               </div>
@@ -633,16 +633,16 @@ export default function ParentDashboard() {
             <div className="p-6">
               {/* Statistics - Keep only basic stats */}
               <div className="mb-6">
-                <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📊 Overzicht</h3>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#4a7c59' }}>📊 Overzicht</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
-                    <div className="text-3xl font-bold" style={{ color: '#667eea' }}>
+                    <div className="text-3xl font-bold" style={{ color: '#4a7c59' }}>
                       {reportData.statistics.totalStories}
                     </div>
                     <div className="text-gray-600 text-sm mt-1">Verhalen gelezen</div>
                   </div>
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
-                    <div className="text-3xl font-bold" style={{ color: '#764ba2' }}>
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+                    <div className="text-3xl font-bold" style={{ color: '#4a7c59' }}>
                       {reportData.statistics.totalSegments}
                     </div>
                     <div className="text-gray-600 text-sm mt-1">Verhaalsegmenten</div>
@@ -672,8 +672,8 @@ export default function ParentDashboard() {
                     className="flex items-center justify-between cursor-pointer p-3 rounded-lg mb-3 transition-all hover:bg-gray-50"
                     onClick={() => setStoriesDropdownOpen(!storiesDropdownOpen)}
                     style={{
-                      background: storiesDropdownOpen ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#f5f7fa',
-                      color: storiesDropdownOpen ? '#ffffff' : '#667eea',
+                      background: storiesDropdownOpen ? 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)' : '#f5f7fa',
+                      color: storiesDropdownOpen ? '#2d5016' : '#4a7c59',
                     }}
                   >
                     <h3 className="text-xl font-bold flex items-center gap-2">
@@ -965,7 +965,7 @@ export default function ParentDashboard() {
                                     {story.metadata?.creativity_metrics?.imaginative_elements && 
                                      Array.isArray(story.metadata.creativity_metrics.imaginative_elements) && 
                                      story.metadata.creativity_metrics.imaginative_elements.length > 0 && (
-                                      <div className="p-2 rounded bg-purple-50 border border-purple-200">
+                                      <div className="p-2 rounded bg-green-50 border border-green-200">
                                         <div className="text-xs font-bold mb-1" style={{ color: '#9c27b0' }}>
                                           ✨ Creatieve Elementen ({story.metadata.creativity_metrics.imaginative_elements.length}):
                                         </div>
@@ -1012,7 +1012,7 @@ export default function ParentDashboard() {
                                       story.metadata?.vocabulary_metrics?.unique_words || 
                                       story.metadata?.vocabulary_metrics?.diversity_score) && (
                                       <div className="p-2 rounded bg-indigo-50 border border-indigo-200">
-                                        <div className="text-xs font-bold mb-1" style={{ color: '#667eea' }}>
+                                        <div className="text-xs font-bold mb-1" style={{ color: '#4a7c59' }}>
                                           📈 Vocabulaire Metrics:
                                         </div>
                                         <div className="text-xs space-y-0.5" style={{ color: '#333333' }}>

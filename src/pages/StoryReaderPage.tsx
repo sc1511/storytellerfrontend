@@ -2805,6 +2805,25 @@ export default function StoryReaderPage() {
                 })}
               </div>
               
+              {/* Test Reminder Message - Above Avatar on Last Segment */}
+              {isLastSegment && currentSegment?.comprehension_questions && 
+               Array.isArray(currentSegment.comprehension_questions) && 
+               currentSegment.comprehension_questions.length > 0 &&
+               !testCompletedForSegment[currentSegmentIndex] && (
+                <div className="mb-3 px-3 py-2 rounded-lg text-center" style={{
+                  background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
+                  border: '2px solid #ffc107',
+                  boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
+                }}>
+                  <p className="text-sm font-bold" style={{
+                    color: '#856404',
+                    fontFamily: "'Comfortaa', sans-serif",
+                  }}>
+                    ⚠️ Vergeet niet je test nog te doen!
+                  </p>
+                </div>
+              )}
+              
               {/* Avatar - Moved to bottom of choices panel, larger container for book reading - Clickable */}
               <div 
                 className="flex items-center justify-center mt-4 cursor-pointer transition-transform hover:scale-105 active:scale-95" 
