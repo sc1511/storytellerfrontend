@@ -167,26 +167,76 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${KPOP_COLORS.darkBg} 0%, ${KPOP_COLORS.darkBgSecondary} 50%, ${KPOP_COLORS.darkBgTertiary} 100%)` }}>
       {/* GIF achtergrond - Kat kleiner en bovenaan - Klikbaar */}
-      <button
-        onClick={handleCatClick}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-auto h-[40vh] max-h-[400px] object-contain cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 group"
-        style={{
-          zIndex: 1,
-          background: 'transparent',
-          border: 'none',
-          padding: 0,
-        }}
-        title="Klik voor een bericht!"
-      >
-        <img
-          src="/cat-upsidedown-unscreen.gif"
-          alt=""
-          className="w-full h-full object-contain transition-all duration-300"
+      <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ zIndex: 1 }}>
+        <button
+          onClick={handleCatClick}
+          onMouseEnter={() => setIsCatHovered(true)}
+          onMouseLeave={() => setIsCatHovered(false)}
+          className="w-auto h-[40vh] max-h-[400px] object-contain cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 group"
           style={{
-            filter: 'drop-shadow(0 0 15px rgba(255, 16, 240, 0.5))',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            position: 'relative',
           }}
-        />
-      </button>
+          title="Klik voor een bericht!"
+        >
+          <img
+            src="/cat-upsidedown-unscreen.gif"
+            alt=""
+            className="w-full h-full object-contain transition-all duration-300"
+            style={{
+              filter: 'drop-shadow(0 0 15px rgba(255, 16, 240, 0.5))',
+            }}
+          />
+          
+          {/* Hover tooltip - "Klik voor meer info!" */}
+          {isCatHovered && !showCatMessage && (
+            <div
+              ref={catTooltipRef}
+              className="absolute left-1/2 -translate-x-1/2 top-[calc(40vh+20px)] z-50 px-4 py-3 rounded-2xl shadow-2xl pointer-events-none"
+              style={{
+                background: `linear-gradient(135deg, ${KPOP_COLORS.darkBgSecondary} 0%, ${KPOP_COLORS.darkBgTertiary} 100%)`,
+                border: `2px solid ${KPOP_COLORS.neonCyan}`,
+                boxShadow: `
+                  0 0 15px ${KPOP_COLORS.neonCyan}66,
+                  0 0 30px ${KPOP_COLORS.neonCyan}44,
+                  inset 0 0 15px ${KPOP_COLORS.neonCyan}22
+                `,
+                minWidth: '200px',
+                maxWidth: '300px',
+                whiteSpace: 'nowrap',
+                animation: 'fadeInTooltip 0.3s ease-out',
+              }}
+            >
+              <div className="text-center">
+                <p
+                  className="text-base md:text-lg font-bold"
+                  style={{
+                    color: KPOP_COLORS.neonCyan,
+                    fontFamily: "'Poppins', sans-serif",
+                    textShadow: `0 0 8px ${KPOP_COLORS.neonCyan}, 0 0 16px ${KPOP_COLORS.neonCyan}66`,
+                    lineHeight: '1.3',
+                  }}
+                >
+                  👆 Klik voor meer info!
+                </p>
+              </div>
+              
+              {/* Arrow pointing up to cat */}
+              <div
+                className="absolute left-1/2 -translate-x-1/2 top-[-12px] w-0 h-0"
+                style={{
+                  borderLeft: '12px solid transparent',
+                  borderRight: '12px solid transparent',
+                  borderBottom: `12px solid ${KPOP_COLORS.neonCyan}`,
+                  filter: `drop-shadow(0 -2px 4px ${KPOP_COLORS.neonCyan}66)`,
+                }}
+              />
+            </div>
+          )}
+        </button>
+      </div>
 
 
       {/* Neon Geometric Shapes and Lines - Decorative Background Elements */}
@@ -614,6 +664,17 @@ export function IntroScene({ onComplete, onLibrary }: IntroSceneProps) {
             50% {
               opacity: 1;
               box-shadow: 0 0 40px ${KPOP_COLORS.neonPurple}88, 0 0 60px ${KPOP_COLORS.neonPink}66;
+            }
+          }
+          
+          @keyframes fadeInTooltip {
+            0% {
+              opacity: 0;
+              transform: translateY(-10px) scale(0.9);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
             }
           }
         `}
