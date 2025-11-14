@@ -2818,7 +2818,17 @@ export default function StoryReaderPage() {
                   const hasQuestions = !focusMode && questions && Array.isArray(questions) && questions.length > 0;
                   const isTestRequired = hasQuestions;
                   const isTestCompleted = testCompletedForSegment[currentSegmentIndex] || false;
-                  const isChoiceDisabled = isLoading || currentSession.completed || (isTestRequired && !isTestCompleted);
+                  
+                  // For old stories: disable if choice was already made AND this is not the selected choice
+                  const isOldStoryWithChoice = choiceAlreadyMade && !isLastSegment;
+                  const isThisSelectedChoice = selectedChoiceLabel === choiceLabel;
+                  const isChoiceDisabledForOldStory = isOldStoryWithChoice && !isThisSelectedChoice;
+                  
+                  // Disable choice if: loading, story completed, test required but not completed, OR old story with different choice
+                  const isChoiceDisabled = isLoading || 
+                                          currentSession.completed || 
+                                          (isTestRequired && !isTestCompleted) ||
+                                          isChoiceDisabledForOldStory;
                   
                   return (
                     <button
@@ -2826,6 +2836,11 @@ export default function StoryReaderPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        
+                        // Block clicks on old story choices that weren't selected
+                        if (isChoiceDisabledForOldStory) {
+                          return;
+                        }
                         
                         // If test is required but not completed, show avatar bubble to guide the child
                         if (isTestRequired && !isTestCompleted) {
@@ -2858,7 +2873,7 @@ export default function StoryReaderPage() {
                           : choice;
                         handleChoice(choiceObj);
                       }}
-                      disabled={isLoading || currentSession.completed}
+                      disabled={isChoiceDisabled}
                       style={{
                         background: isChoiceDisabledForOldStory 
                           ? 'rgba(224, 224, 224, 0.3)' // Very light gray for old non-selected choices
@@ -2895,21 +2910,43 @@ export default function StoryReaderPage() {
                     >
                       <div className="flex items-center gap-4 w-full">
                         <div 
-                          className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center font-bold"
+                          className="flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center font-bold relative"
                           style={{
-                            background: choiceColor.border,
-                            color: BOOK_COLORS.warmWhite,
-                            boxShadow: `0 2px 8px ${BOOK_COLORS.shadowLight}`,
+                            background: isChoiceDisabledForOldStory 
+                              ? 'rgba(200, 200, 200, 0.5)' 
+                              : (isThisSelectedChoice && choiceAlreadyMade
+                                ? '#4caf50' // Green for selected choice in old story
+                                : choiceColor.border),
+                            color: isChoiceDisabledForOldStory 
+                              ? 'rgba(100, 100, 100, 0.6)' 
+                              : BOOK_COLORS.warmWhite,
+                            boxShadow: isChoiceDisabledForOldStory 
+                              ? 'none' 
+                              : `0 2px 8px ${BOOK_COLORS.shadowLight}`,
                             fontSize: '24px',
                             fontFamily: "'Comfortaa', sans-serif",
                           }}
                         >
                           {choiceLabel}
+                          {isThisSelectedChoice && choiceAlreadyMade && (
+                            <span style={{ 
+                              position: 'absolute', 
+                              fontSize: '16px',
+                              marginTop: '-8px',
+                              marginLeft: '8px',
+                              color: '#ffffff',
+                              fontWeight: 'bold',
+                            }}>✓</span>
+                          )}
                         </div>
                         <p 
                           className="flex-1 font-semibold leading-relaxed"
                           style={{
-                            color: choiceColor.text,
+                            color: isChoiceDisabledForOldStory 
+                              ? 'rgba(100, 100, 100, 0.6)' 
+                              : (isThisSelectedChoice && choiceAlreadyMade
+                                ? '#1b5e20' // Dark green for selected choice
+                                : choiceColor.text),
                             fontFamily: "'Comfortaa', 'Baloo 2', sans-serif",
                             fontSize: '13px',
                             lineHeight: '1.4',
