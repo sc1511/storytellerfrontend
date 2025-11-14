@@ -225,6 +225,13 @@ const AVATAR_MESSAGES = {
     "Geweldig gedaan! Je hebt het verhaal tot leven gebracht!",
     "Super! Wat een mooi avontuur!",
   ],
+  testEncouragement: [
+    "Wil je nog een laatste test doen? Dan kunnen je ouders zien hoe goed je het verhaal begreep! 😊",
+    "Laat zien wat je geleerd hebt! Doe nog een test! 🎯",
+    "Je bent bijna klaar! Doe nog een laatste test om te laten zien hoe goed je het verhaal kent! ⭐",
+    "Test tijd! Laat zien hoe goed je het verhaal begreep! 🚀",
+    "Nog één test en je bent helemaal klaar! Kom op, je kunt het! 💪",
+  ],
 };
 
 export default function StoryReaderPage() {
@@ -254,7 +261,7 @@ export default function StoryReaderPage() {
   const [focusModePages, setFocusModePages] = useState<string[]>([]);
   const [isEndingStory, setIsEndingStory] = useState(false);
   const [avatarMessage, setAvatarMessage] = useState<string | null>(null);
-  const [avatarMessageType, setAvatarMessageType] = useState<'reading' | 'wordClicked' | 'definitionShown' | 'testPrompt' | 'testCompleted' | 'completion' | 'choicePrompt' | null>(null);
+  const [avatarMessageType, setAvatarMessageType] = useState<'reading' | 'wordClicked' | 'definitionShown' | 'testPrompt' | 'testCompleted' | 'completion' | 'choicePrompt' | 'testEncouragement' | null>(null);
   const [showAvatarBubble, setShowAvatarBubble] = useState(false);
   const [showLibraryModal, setShowLibraryModal] = useState(false);
   const [wordClickCount, setWordClickCount] = useState(0);
@@ -592,7 +599,7 @@ export default function StoryReaderPage() {
   };
 
   // Show avatar message with bubble
-  const showAvatarMessage = (type: 'reading' | 'wordClicked' | 'definitionShown' | 'testPrompt' | 'testCompleted' | 'completion' | 'choicePrompt') => {
+  const showAvatarMessage = (type: 'reading' | 'wordClicked' | 'definitionShown' | 'testPrompt' | 'testCompleted' | 'completion' | 'choicePrompt' | 'testEncouragement') => {
     const message = getRandomAvatarMessage(type);
     setAvatarMessage(message);
     setAvatarMessageType(type);
@@ -3071,10 +3078,21 @@ export default function StoryReaderPage() {
                       completionBubbleTimeoutRef.current = null;
                     }
                     
-                    // Show new message immediately
-                    const message = getRandomAvatarMessage('completion');
+                    // Check if last segment has test questions and if test is not completed
+                    const lastSegment = currentSession.story_segments[currentSession.story_segments.length - 1];
+                    const hasTestQuestions = lastSegment?.comprehension_questions && Array.isArray(lastSegment.comprehension_questions) && lastSegment.comprehension_questions.length > 0;
+                    const lastSegmentIndex = currentSession.story_segments.length - 1;
+                    const isTestCompleted = testCompletedForSegment[lastSegmentIndex] || false;
+                    
+                    // Show appropriate message
+                    let messageType: 'completion' | 'testEncouragement' = 'completion';
+                    if (hasTestQuestions && !isTestCompleted) {
+                      messageType = 'testEncouragement';
+                    }
+                    
+                    const message = getRandomAvatarMessage(messageType);
                     setAvatarMessage(message);
-                    setAvatarMessageType('completion');
+                    setAvatarMessageType(messageType);
                     setShowAvatarBubble(true);
                     
                     // Keep bubble visible for 15 seconds (longer duration)
@@ -3130,7 +3148,7 @@ export default function StoryReaderPage() {
                 </div>
                 
                 {/* Avatar Message Bubble - Shows automatically and stays for 10 seconds */}
-                {showAvatarBubble && avatarMessage && avatarMessageType === 'completion' && (
+                {showAvatarBubble && avatarMessage && (avatarMessageType === 'completion' || avatarMessageType === 'testEncouragement') && (
                   <div
                     className="relative px-4 py-2 rounded-xl shadow-2xl"
                     style={{
@@ -3181,17 +3199,66 @@ export default function StoryReaderPage() {
                 Je verhaal is automatisch opgeslagen voor je ouders en leraren om te bekijken!
               </p>
 
-              <p
-                className="text-base mb-6"
-                style={{
-                  color: BOOK_COLORS.accentOrange,
-                  fontFamily: "'Comfortaa', sans-serif",
-                  fontWeight: 600,
-                  fontStyle: 'italic',
-                }}
-              >
-                Vergeet niet nog een test te doen ;)
-              </p>
+              {/* Check if last segment has test questions and if test is not completed */}
+              {(() => {
+                const lastSegment = currentSession.story_segments[currentSession.story_segments.length - 1];
+                const hasTestQuestions = lastSegment?.comprehension_questions && Array.isArray(lastSegment.comprehension_questions) && lastSegment.comprehension_questions.length > 0;
+                const lastSegmentIndex = currentSession.story_segments.length - 1;
+                const isTestCompleted = testCompletedForSegment[lastSegmentIndex] || false;
+                
+                if (hasTestQuestions && !isTestCompleted) {
+                  return (
+                    <div className="mb-6">
+                      <p
+                        className="text-base mb-4"
+                        style={{
+                          color: BOOK_COLORS.accentOrange,
+                          fontFamily: "'Comfortaa', sans-serif",
+                          fontWeight: 600,
+                          fontStyle: 'italic',
+                        }}
+                      >
+                        Doe nog een laatste test om te laten zien hoe goed je het verhaal begreep! 😊
+                      </p>
+                      <button
+                        onClick={() => {
+                          setShowStoryCompletedModal(false);
+                          // Go to last segment and show test
+                          setCurrentSegmentIndex(lastSegmentIndex);
+                          setShowComprehensionTest(true);
+                        }}
+                        className="w-full px-6 py-3 rounded-2xl font-bold text-lg transition-all hover:scale-105 active:scale-95 mb-3"
+                        style={{
+                          background: BOOK_COLORS.accentOrange,
+                          border: `3px solid ${BOOK_COLORS.accentOrange}`,
+                          color: BOOK_COLORS.warmWhite,
+                          fontFamily: "'Comfortaa', sans-serif",
+                          fontWeight: 700,
+                          boxShadow: `0 4px 16px ${BOOK_COLORS.accentOrange}66`,
+                          minWidth: 'auto',
+                          minHeight: 'auto',
+                        }}
+                      >
+                        🎯 Doe de Test Nu!
+                      </button>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <p
+                      className="text-base mb-6"
+                      style={{
+                        color: BOOK_COLORS.accentOrange,
+                        fontFamily: "'Comfortaa', sans-serif",
+                        fontWeight: 600,
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {isTestCompleted ? 'Geweldig! Je hebt alle tests voltooid! 🎉' : 'Je verhaal is klaar! 🎉'}
+                    </p>
+                  );
+                }
+              })()}
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-3 w-full">
