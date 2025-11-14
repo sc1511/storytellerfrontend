@@ -385,9 +385,20 @@ export default function StoryReaderPage() {
     if (showStoryCompletedModal && currentProfile?.avatarCustomization) {
       // Small delay to ensure modal is fully rendered
       const timer = setTimeout(() => {
-        const message = getRandomAvatarMessage('completion');
+        // Check if last segment has comprehension questions
+        const lastSegment = currentSession.story_segments[currentSession.story_segments.length - 1];
+        const hasTestQuestions = lastSegment?.comprehension_questions && Array.isArray(lastSegment.comprehension_questions) && lastSegment.comprehension_questions.length > 0;
+        const isTestCompleted = testCompletedForSegment[currentSession.story_segments.length - 1] || false;
+        
+        // If there are test questions and test is not completed, show encouragement message
+        let messageType: 'completion' | 'testEncouragement' = 'completion';
+        if (hasTestQuestions && !isTestCompleted) {
+          messageType = 'testEncouragement';
+        }
+        
+        const message = getRandomAvatarMessage(messageType);
         setAvatarMessage(message);
-        setAvatarMessageType('completion');
+        setAvatarMessageType(messageType);
         setShowAvatarBubble(true);
         // Keep avatar and bubble visible for 20 seconds
         setTimeout(() => {
@@ -403,7 +414,7 @@ export default function StoryReaderPage() {
         clearTimeout(timer);
       };
     }
-  }, [showStoryCompletedModal, currentProfile]);
+  }, [showStoryCompletedModal, currentProfile, currentSession, testCompletedForSegment]);
   
   // Show reading message when segment changes
   useEffect(() => {
