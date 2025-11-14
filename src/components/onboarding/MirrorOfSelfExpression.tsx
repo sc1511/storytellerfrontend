@@ -1227,8 +1227,6 @@ export function MirrorOfSelfExpression({
               }}
               className="lang-button group transition-all duration-300 hover:scale-105 active:scale-95 relative"
               style={{ zIndex: 30, pointerEvents: 'auto', cursor: 'pointer' }}
-              onMouseEnter={() => setHoveredLanguage('en')}
-              onMouseLeave={() => setHoveredLanguage(null)}
               disabled={!selectedAvatarId}
             >
               <div
