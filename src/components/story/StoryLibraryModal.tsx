@@ -179,9 +179,19 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
   };
 
   // Always show loading overlay if navigating, even if modal is closed
+  // This overlay stays visible until StoryReaderPage takes over with its own loading
   if (isNavigating) {
     return (
-      <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div 
+        className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        style={{
+          width: '100vw',
+          height: '100vh',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+        }}
+      >
         {/* Background Video */}
         <video
           src="/kidsreadingtablet.mp4"
@@ -189,10 +199,21 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-          style={{ zIndex: 1 }}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ 
+            zIndex: 1,
+            opacity: 0.4,
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+          }}
           onError={(e) => {
             console.error('Error loading video:', e);
+          }}
+          onLoadedData={() => {
+            console.log('✅ Loading video loaded successfully');
           }}
         />
         
