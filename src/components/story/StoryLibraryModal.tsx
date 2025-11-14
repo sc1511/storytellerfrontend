@@ -151,22 +151,21 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     // Close modal first
     onClose();
     
-    // Small delay before navigation to show loading
+    // Navigate immediately - no delay needed
+    navigate(`/story/${sessionId}`);
+    
+    // Keep loading overlay visible until StoryReaderPage takes over
+    // The overlay will be hidden when StoryReaderPage's loading state changes
+    // We use a longer timeout as fallback in case something goes wrong
     setTimeout(() => {
-      // Navigate to story reader page
-      navigate(`/story/${sessionId}`);
-      // Keep loading overlay visible longer - StoryReaderPage needs time to load
-      // The StoryReaderPage has its own loading state, but we keep this overlay
-      // visible for at least 3-4 seconds to ensure smooth transition
-      setTimeout(() => {
-        // Only hide if we're still navigating to the same session
-        // (in case user navigated away or page loaded)
-        if (navigatingToSessionId === sessionId) {
-          setIsNavigating(false);
-          setNavigatingToSessionId(null);
-        }
-      }, 4000); // Keep visible for 4 seconds - gives StoryReaderPage time to load
-    }, 300);
+      // Only hide if we're still navigating to the same session
+      // (in case user navigated away or page loaded)
+      if (navigatingToSessionId === sessionId) {
+        console.log('⚠️ Loading overlay timeout - hiding after 10 seconds');
+        setIsNavigating(false);
+        setNavigatingToSessionId(null);
+      }
+    }, 10000); // 10 seconds fallback - should be enough for API call
   };
 
   const formatDate = (dateString: string) => {
@@ -409,18 +408,18 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      {session.completed && (
-                        <span
+                    {session.completed && (
+                      <span
                           className="text-xs px-2 py-1 rounded-full flex-shrink-0"
-                          style={{
-                            background: `${KPOP_COLORS.neonCyan}22`,
-                            color: KPOP_COLORS.neonCyan,
-                            border: `1px solid ${KPOP_COLORS.neonCyan}44`,
-                          }}
-                        >
-                          ✓ Voltooid
-                        </span>
-                      )}
+                        style={{
+                          background: `${KPOP_COLORS.neonCyan}22`,
+                          color: KPOP_COLORS.neonCyan,
+                          border: `1px solid ${KPOP_COLORS.neonCyan}44`,
+                        }}
+                      >
+                        ✓ Voltooid
+                      </span>
+                    )}
                       {needsTest && (
                         <span
                           className="text-xs px-2 py-1 rounded-full flex-shrink-0"
@@ -468,7 +467,7 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
                       }}>
                         📝 Verhaal heeft {totalTestsNeeded} {totalTestsNeeded === 1 ? 'test' : 'tests'} beschikbaar
                       </p>
-                    </div>
+                  </div>
                   )}
                   <div className="flex items-center justify-between text-sm pt-2 border-t"
                     style={{
