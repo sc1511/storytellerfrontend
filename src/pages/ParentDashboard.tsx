@@ -631,9 +631,9 @@ export default function ParentDashboard() {
             </div>
 
             <div className="p-6">
-              {/* Statistics */}
+              {/* Statistics - Keep only basic stats */}
               <div className="mb-6">
-                <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📊 Statistieken</h3>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📊 Overzicht</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
                     <div className="text-3xl font-bold" style={{ color: '#667eea' }}>
@@ -664,195 +664,7 @@ export default function ParentDashboard() {
                 </div>
               </div>
 
-              {/* Vocabulary */}
-              {reportData.vocabulary && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>📈 Taal & Vocabulaire</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {reportData.vocabulary.totalWords && reportData.vocabulary.totalWords > 0 && (
-                      <div className="bg-white border-2 border-blue-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#667eea' }}>
-                          {reportData.vocabulary.totalWords}
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Totaal woorden</div>
-                      </div>
-                    )}
-                    {reportData.vocabulary.totalUniqueWords && reportData.vocabulary.totalUniqueWords > 0 && (
-                      <div className="bg-white border-2 border-purple-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#764ba2' }}>
-                          {reportData.vocabulary.totalUniqueWords}
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Unieke woorden</div>
-                      </div>
-                    )}
-                    {reportData.vocabulary.avgDiversityScore && (
-                      <div className="bg-white border-2 border-green-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#4caf50' }}>
-                          {reportData.vocabulary.avgDiversityScore}%
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Vocabulaire diversiteit</div>
-                      </div>
-                    )}
-                    {reportData.vocabulary.mostCommonReadingLevel && (
-                      <div className="bg-white border-2 border-yellow-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#ff9800' }}>
-                          {reportData.vocabulary.mostCommonReadingLevel}
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Leesniveau</div>
-                      </div>
-                    )}
-                  </div>
-                  {reportData.vocabulary.uniqueAdvancedVocab && reportData.vocabulary.uniqueAdvancedVocab.length > 0 && (() => {
-                    // List of placeholder/test words to filter out
-                    const placeholderWords = [
-                      'placeholder', 'test', 'example', 'sample', 'dummy', 'lorem', 'ipsum',
-                      'demo', 'temporary', 'temp', 'xxx', 'yyy', 'zzz', 'abc', '123',
-                      'voorbeeld', 'testwoord', 'placeholderwoord', 'demo', 'voorbeeldwoord'
-                    ];
-                    
-                    // Extract words from array - handle both strings and objects
-                    const words = reportData.vocabulary.uniqueAdvancedVocab
-                      .map((w: any) => {
-                        if (typeof w === 'string') {
-                          return w;
-                        } else if (w && typeof w === 'object') {
-                          // Handle object with 'word' property
-                          if ('word' in w && typeof w.word === 'string') {
-                            return w.word;
-                          }
-                          // Try to stringify if it's a complex object
-                          return null;
-                        }
-                        return null;
-                      })
-                      .filter((w: any) => {
-                        // Filter out null/undefined and placeholder words
-                        if (!w || typeof w !== 'string') return false;
-                        const lowerWord = w.toLowerCase().trim();
-                        return lowerWord.length > 0 && !placeholderWords.includes(lowerWord);
-                      })
-                      .slice(0, 10);
-                    
-                    // Also get definitions if available
-                    const vocabWithDefinitions = reportData.vocabulary.uniqueAdvancedVocab
-                      .filter((w: any) => {
-                        if (typeof w === 'string') return true;
-                        if (w && typeof w === 'object' && 'word' in w) {
-                          const word = w.word?.toLowerCase().trim() || '';
-                          return word.length > 0 && !placeholderWords.includes(word);
-                        }
-                        return false;
-                      })
-                      .slice(0, 10);
-                    
-                    return vocabWithDefinitions.length > 0 ? (
-                      <div className="mt-4 bg-white border-2 border-blue-200 p-4 rounded-lg">
-                        <div className="font-bold mb-2" style={{ color: '#667eea' }}>
-                          Nieuwe moeilijke woorden ({vocabWithDefinitions.length})
-                        </div>
-                        <div className="space-y-2">
-                          {vocabWithDefinitions.map((item: any, idx: number) => {
-                            if (typeof item === 'string') {
-                              return (
-                                <div key={idx} className="text-sm" style={{ color: '#333333' }}>
-                                  <strong>{item}</strong>
-                                </div>
-                              );
-                            } else if (item && typeof item === 'object' && 'word' in item) {
-                              return (
-                                <div key={idx} className="text-sm" style={{ color: '#333333' }}>
-                                  <strong>{item.word}</strong>
-                                  {item.definition && (
-                                    <span className="text-gray-600 ml-2">- {item.definition}</span>
-                                  )}
-                                </div>
-                              );
-                            }
-                            return null;
-                          })}
-                        </div>
-                      </div>
-                    ) : null;
-                  })()}
-                </div>
-              )}
-
-              {/* Creativity */}
-              {reportData.creativity && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-4" style={{ color: '#667eea' }}>🎨 Creativiteit</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {reportData.creativity.avgOriginalityScore && (
-                      <div className="bg-white border-2 border-pink-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#e91e63' }}>
-                          {reportData.creativity.avgOriginalityScore}%
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Originaliteit score</div>
-                      </div>
-                    )}
-                    {reportData.creativity.avgCharacterDepth && (
-                      <div className="bg-white border-2 border-purple-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#764ba2' }}>
-                          {reportData.creativity.avgCharacterDepth}/10
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Karakter ontwikkeling</div>
-                      </div>
-                    )}
-                    {reportData.creativity.avgSensoryLanguage && (
-                      <div className="bg-white border-2 border-orange-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#ff9800' }}>
-                          {reportData.creativity.avgSensoryLanguage}%
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Zintuiglijke taal</div>
-                      </div>
-                    )}
-                    {reportData.creativity.uniqueEducationalThemes && reportData.creativity.uniqueEducationalThemes.length > 0 && (
-                      <div className="bg-white border-2 border-green-200 p-4 rounded-lg">
-                        <div className="text-2xl font-bold" style={{ color: '#4caf50' }}>
-                          {reportData.creativity.uniqueEducationalThemes.length}
-                        </div>
-                        <div className="text-gray-600 text-sm mt-1">Educatieve thema's</div>
-                      </div>
-                    )}
-                  </div>
-                  {reportData.creativity.plotComplexityDistribution && (
-                    <div className="mt-4 bg-white border-2 border-indigo-200 p-4 rounded-lg">
-                      <div className="font-bold mb-2" style={{ color: '#667eea' }}>
-                        Plot Complexiteit
-                      </div>
-                      <div className="text-gray-600 text-sm space-y-1">
-                        {Object.entries(reportData.creativity.plotComplexityDistribution).map(([complexity, count]: [string, any]) => (
-                          <div key={complexity}>
-                            <strong>{complexity}</strong>: {count} {count === 1 ? 'verhaal' : 'verhalen'}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {reportData.creativity.imaginativeElements && reportData.creativity.imaginativeElements.length > 0 && (
-                    <div className="mt-4 bg-white border-2 border-pink-200 p-4 rounded-lg">
-                      <div className="font-bold mb-2" style={{ color: '#e91e63' }}>
-                        Creatieve Elementen ({reportData.creativity.imaginativeElements.length})
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        {reportData.creativity.imaginativeElements.join(', ')}
-                      </div>
-                    </div>
-                  )}
-                  {reportData.creativity.uniqueEducationalThemes && reportData.creativity.uniqueEducationalThemes.length > 0 && (
-                    <div className="mt-4 bg-white border-2 border-green-200 p-4 rounded-lg">
-                      <div className="font-bold mb-2" style={{ color: '#4caf50' }}>
-                        Thema's ({reportData.creativity.uniqueEducationalThemes.length})
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        {reportData.creativity.uniqueEducationalThemes.join(', ')}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Stories with Test Results */}
+              {/* Stories with Test Results - All metrics per story */}
               {reportData.stories && reportData.stories.length > 0 && (
                 <div className="mb-6">
                   {/* Dropdown Header */}
@@ -1133,25 +945,93 @@ export default function ParentDashboard() {
                                     )}
                                   </div>
                                   
-                                  {/* Full Educational Themes List (if available) */}
-                                  {story.metadata?.educational_themes && 
-                                   Array.isArray(story.metadata.educational_themes) && 
-                                   story.metadata.educational_themes.length > 0 && (
-                                    <div className="mt-2 text-xs" style={{ color: '#666666' }}>
-                                      <span className="font-semibold" style={{ color: '#4caf50' }}>Thema's: </span>
-                                      <span>{story.metadata.educational_themes.join(', ')}</span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Full Imaginative Elements List (if available) */}
-                                  {story.metadata?.creativity_metrics?.imaginative_elements && 
-                                   Array.isArray(story.metadata.creativity_metrics.imaginative_elements) && 
-                                   story.metadata.creativity_metrics.imaginative_elements.length > 0 && (
-                                    <div className="mt-1 text-xs" style={{ color: '#666666' }}>
-                                      <span className="font-semibold" style={{ color: '#9c27b0' }}>Elementen: </span>
-                                      <span>{story.metadata.creativity_metrics.imaginative_elements.join(', ')}</span>
-                                    </div>
-                                  )}
+                                  {/* Full Details - All metrics expanded */}
+                                  <div className="mt-3 space-y-2">
+                                    {/* Educational Themes - Full List */}
+                                    {story.metadata?.educational_themes && 
+                                     Array.isArray(story.metadata.educational_themes) && 
+                                     story.metadata.educational_themes.length > 0 && (
+                                      <div className="p-2 rounded bg-green-50 border border-green-200">
+                                        <div className="text-xs font-bold mb-1" style={{ color: '#4caf50' }}>
+                                          📚 Educatieve Thema's ({story.metadata.educational_themes.length}):
+                                        </div>
+                                        <div className="text-xs" style={{ color: '#333333' }}>
+                                          {story.metadata.educational_themes.join(', ')}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Imaginative Elements - Full List */}
+                                    {story.metadata?.creativity_metrics?.imaginative_elements && 
+                                     Array.isArray(story.metadata.creativity_metrics.imaginative_elements) && 
+                                     story.metadata.creativity_metrics.imaginative_elements.length > 0 && (
+                                      <div className="p-2 rounded bg-purple-50 border border-purple-200">
+                                        <div className="text-xs font-bold mb-1" style={{ color: '#9c27b0' }}>
+                                          ✨ Creatieve Elementen ({story.metadata.creativity_metrics.imaginative_elements.length}):
+                                        </div>
+                                        <div className="text-xs" style={{ color: '#333333' }}>
+                                          {story.metadata.creativity_metrics.imaginative_elements.join(', ')}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Advanced Vocabulary - Full List with Definitions */}
+                                    {story.metadata?.vocabulary_metrics?.advanced_vocabulary && 
+                                     Array.isArray(story.metadata.vocabulary_metrics.advanced_vocabulary) && 
+                                     story.metadata.vocabulary_metrics.advanced_vocabulary.length > 0 && (
+                                      <div className="p-2 rounded bg-blue-50 border border-blue-200">
+                                        <div className="text-xs font-bold mb-1" style={{ color: '#2196f3' }}>
+                                          📝 Nieuwe Moeilijke Woorden ({story.metadata.vocabulary_metrics.advanced_vocabulary.length}):
+                                        </div>
+                                        <div className="space-y-1">
+                                          {story.metadata.vocabulary_metrics.advanced_vocabulary.map((item: any, idx: number) => {
+                                            if (typeof item === 'string') {
+                                              return (
+                                                <div key={idx} className="text-xs" style={{ color: '#333333' }}>
+                                                  • <strong>{item}</strong>
+                                                </div>
+                                              );
+                                            } else if (item && typeof item === 'object' && 'word' in item) {
+                                              return (
+                                                <div key={idx} className="text-xs" style={{ color: '#333333' }}>
+                                                  • <strong>{item.word}</strong>
+                                                  {item.definition && (
+                                                    <span className="text-gray-600 ml-1">- {item.definition}</span>
+                                                  )}
+                                                </div>
+                                              );
+                                            }
+                                            return null;
+                                          })}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Vocabulary Metrics */}
+                                    {(story.metadata?.vocabulary_metrics?.total_word_count || 
+                                      story.metadata?.vocabulary_metrics?.unique_words || 
+                                      story.metadata?.vocabulary_metrics?.diversity_score) && (
+                                      <div className="p-2 rounded bg-indigo-50 border border-indigo-200">
+                                        <div className="text-xs font-bold mb-1" style={{ color: '#667eea' }}>
+                                          📈 Vocabulaire Metrics:
+                                        </div>
+                                        <div className="text-xs space-y-0.5" style={{ color: '#333333' }}>
+                                          {story.metadata.vocabulary_metrics.total_word_count && (
+                                            <div>Totaal woorden: <strong>{story.metadata.vocabulary_metrics.total_word_count}</strong></div>
+                                          )}
+                                          {story.metadata.vocabulary_metrics.unique_words && (
+                                            <div>Unieke woorden: <strong>{story.metadata.vocabulary_metrics.unique_words}</strong></div>
+                                          )}
+                                          {story.metadata.vocabulary_metrics.diversity_score && (
+                                            <div>Diversiteit: <strong>{story.metadata.vocabulary_metrics.diversity_score}%</strong></div>
+                                          )}
+                                          {story.metadata.vocabulary_metrics.reading_level && (
+                                            <div>Leesniveau: <strong>{story.metadata.vocabulary_metrics.reading_level}</strong></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
