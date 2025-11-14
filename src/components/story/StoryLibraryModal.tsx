@@ -463,6 +463,7 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
