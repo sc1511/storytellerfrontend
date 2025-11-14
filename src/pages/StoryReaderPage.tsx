@@ -2526,6 +2526,26 @@ export default function StoryReaderPage() {
                       position: 'relative',
                     }}
                   >
+                    {/* Test Reminder Message - Above Avatar on Last Segment */}
+                    {isLastSegment && currentSegment?.comprehension_questions && 
+                     Array.isArray(currentSegment.comprehension_questions) && 
+                     currentSegment.comprehension_questions.length > 0 &&
+                     !testCompletedForSegment[currentSegmentIndex] && (
+                      <div className="mb-4 px-4 py-3 rounded-lg text-center" style={{
+                        background: 'linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%)',
+                        border: '2px solid #ffc107',
+                        boxShadow: '0 4px 12px rgba(255, 193, 7, 0.3)',
+                        maxWidth: 'min(400px, calc(100vw - 40px))',
+                      }}>
+                        <p className="text-base font-bold" style={{
+                          color: '#856404',
+                          fontFamily: "'Comfortaa', sans-serif",
+                        }}>
+                          ⚠️ Vergeet niet je test nog te doen!
+                        </p>
+                      </div>
+                    )}
+                    
                     {/* Text Bubble Above Avatar */}
                     {showAvatarBubbleAboveLargeAvatar && avatarMessage && avatarMessageType === 'completion' && (
                       <div 
