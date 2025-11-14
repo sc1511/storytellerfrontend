@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { storyAPI } from '../../services/api';
 import { useProfileStore } from '../../store/profileStore';
+import { useStoryStore } from '../../store/storyStore';
 import type { StorySession } from '../../types';
 
 // K-pop Dark Neon Color Palette
@@ -24,7 +25,10 @@ interface StoryLibraryModalProps {
 
 export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const currentProfile = useProfileStore((state) => state.currentProfile);
+  const isLoadingStory = useStoryStore((state) => state.isLoading);
+  const currentSession = useStoryStore((state) => state.currentSession);
   const [sessions, setSessions] = useState<StorySession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -153,20 +157,38 @@ export function StoryLibraryModal({ isOpen, onClose }: StoryLibraryModalProps) {
     
     // Navigate immediately - no delay needed
     navigate(`/story/${sessionId}`);
+  };
+
+  // Hide loading overlay when StoryReaderPage has finished loading
+  useEffect(() => {
+    // Check if we're on the story page and loading is complete
+    const isOnStoryPage = location.pathname.startsWith('/story/');
+    const sessionIdFromPath = location.pathname.split('/story/')[1];
     
-    // Keep loading overlay visible until StoryReaderPage takes over
-    // The overlay will be hidden when StoryReaderPage's loading state changes
-    // We use a longer timeout as fallback in case something goes wrong
-    setTimeout(() => {
-      // Only hide if we're still navigating to the same session
-      // (in case user navigated away or page loaded)
-      if (navigatingToSessionId === sessionId) {
-        console.log('⚠️ Loading overlay timeout - hiding after 10 seconds');
+    if (isNavigating && isOnStoryPage && sessionIdFromPath === navigatingToSessionId) {
+      // If StoryReaderPage has finished loading (isLoadingStory is false) and session is loaded
+      if (!isLoadingStory && currentSession?.session_id === navigatingToSessionId) {
+        console.log('✅ Story loaded, hiding loading overlay');
         setIsNavigating(false);
         setNavigatingToSessionId(null);
       }
-    }, 10000); // 10 seconds fallback - should be enough for API call
-  };
+    }
+  }, [isLoadingStory, currentSession, location.pathname, isNavigating, navigatingToSessionId]);
+
+  // Fallback: hide overlay after 5 seconds if still visible (shouldn't happen normally)
+  useEffect(() => {
+    if (isNavigating && navigatingToSessionId) {
+      const timeout = setTimeout(() => {
+        if (isNavigating && navigatingToSessionId) {
+          console.log('⚠️ Loading overlay timeout - hiding after 5 seconds');
+          setIsNavigating(false);
+          setNavigatingToSessionId(null);
+        }
+      }, 5000); // Reduced from 10 to 5 seconds
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [isNavigating, navigatingToSessionId]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
